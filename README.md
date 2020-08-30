@@ -1,8 +1,8 @@
 # Scripts
 
-## Bliss
+## Bliss-sargo
 
-Builds Blissroms for the Google Pixel 3a (sargo) and when it becomes possible, the Google Pixel 4a (sunfish?)
+Builds Blissroms for the Google Pixel 3a (sargo)
 
 ## update-HAMA
 
