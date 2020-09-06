@@ -7,4 +7,4 @@ unzip archive.zip
 mv archive/paperclip.jar ./paper.jar
 rm -rf wget*
 rm -rf archive*
-screen -dmS mc -d java -jar paper.jar
+java -jar paper.jar
