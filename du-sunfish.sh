@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Install build dependencies"
-sudo apt install bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libwxgtk3.0-gtk-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev libncurses5 git openjdk-8-jdk python adb fastboot
+sudo apt install bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses-dev libsdl1.2-dev libssl-dev libwxgtk3.0-gtk3-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev libncurses5 git openjdk-8-jdk python adb fastboot
 
 echo "Installing latest version of repo"
 sudo curl https://storage.googleapis.com/git-repo-downloads/repo > repo
@@ -22,11 +22,16 @@ git config --global user.email "fake@example.com"
 repo init -u https://github.com/DirtyUnicorns/android_manifest.git -b q10x
 repo sync --current-branch --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
 
-
 echo "Now time to build, go take a nap, it'll be done by then (THIS REQUIRES ~250GB OF STORAGE)"
 sleep 5
 cd /opt/android/DU
 . build/envsetup.sh
 lunch du_sunfish-userdebug # You can replace sunfish with any official device to have it build a nightly for you
-make clean
-mka bacon -j8
+mka bacon
+
+# Remove this step if you do not want it to copy the files to /var/www/dl
+
+echo "Uploading to DL site"
+sudo mkdir -p /var/www/dl/sunfish/DU
+sudo cp -r /opt/android/DU/out/target/product/sunfish/du_sunfish-v*.zip /var/www/dl/sunfish/DU/du_sunfish.zip
+sudo cp -r /opt/android/DU/out/target/product/sunfish/boot.img /var/www/dl/sunfish/DU/boot.img
