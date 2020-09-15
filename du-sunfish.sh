@@ -13,7 +13,7 @@ sudo chmod a+x /usr/local/bin/repo
 echo "Creating work directory"
 sleep 1
 sudo mkdir -p /opt/android/DU
-sudo chown -R $USER:$USER /opt/android
+sudo chown $USER:$USER /opt/android/DU
 cd /opt/android/DU
 
 echo "Cloning DirtyUnicorns source"
