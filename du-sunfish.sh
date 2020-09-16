@@ -35,6 +35,8 @@ mka bacon
 # Remove this step if you do not want it to copy the files to /var/www/dl
 
 echo "Uploading to DL site"
+mv /var/www/dl/sunfish/DU/du_sunfish.zip /var/www/dl/sunfish/DU/du_sunfish-prev.zip # just in case the latest build does not boot
+mv /var/www/dl/sunfish/DU/boot.img /var/www/dl/sunfish/DU/boot-prev.img # just in case the latest build does not boot
 cp /opt/android/DU/out/target/product/sunfish/du_sunfish-v*.zip /var/www/dl/sunfish/DU/du_sunfish.zip
 cp /opt/android/DU/out/target/product/sunfish/boot.img /var/www/dl/sunfish/DU/boot.img
 
