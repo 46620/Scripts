@@ -10,10 +10,13 @@ sudo chmod a+x /usr/local/bin/repo
 
 # If you are reading this ily <3
 
-echo "Creating work directory"
+echo "Creating work directories"
 sleep 1
 sudo mkdir -p /opt/android/DU
 sudo chown $USER:$USER /opt/android/DU
+# Was moved to here so the folder can be made when the sudo password is still usable
+sudo mkdir -p /var/www/dl/sunfish/DU
+sudo chown -R $USER:$USER /var/www/dl
 cd /opt/android/DU
 
 echo "Cloning DirtyUnicorns source"
@@ -32,6 +35,8 @@ mka bacon
 # Remove this step if you do not want it to copy the files to /var/www/dl
 
 echo "Uploading to DL site"
-sudo mkdir -p /var/www/dl/sunfish/DU
-sudo cp -r /opt/android/DU/out/target/product/sunfish/du_sunfish-v*.zip /var/www/dl/sunfish/DU/du_sunfish.zip
-sudo cp -r /opt/android/DU/out/target/product/sunfish/boot.img /var/www/dl/sunfish/DU/boot.img
+cp /opt/android/DU/out/target/product/sunfish/du_sunfish-v*.zip /var/www/dl/sunfish/DU/du_sunfish.zip
+cp /opt/android/DU/out/target/product/sunfish/boot.img /var/www/dl/sunfish/DU/boot.img
+
+echo "Clean up of build dir" # To prevent a lot of du_sunfish-v* zips from being an issue later on
+rm -rf /opt/android/DU/out/target/product/sunfish/du_sunfish-*.zip*
