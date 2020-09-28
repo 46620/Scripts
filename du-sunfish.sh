@@ -14,9 +14,6 @@ echo "Creating work directories"
 sleep 1
 sudo mkdir -p /opt/android/DU
 sudo chown $USER:$USER /opt/android/DU
-# Was moved to here so the folder can be made when the sudo password is still usable
-sudo mkdir -p /var/www/dl/sunfish/DU
-sudo chown -R $USER:$USER /var/www/dl
 cd /opt/android/DU
 
 echo "Cloning DirtyUnicorns source"
@@ -29,16 +26,5 @@ echo "Now time to build, go take a nap, it'll be done by then (THIS REQUIRES ~25
 sleep 5
 cd /opt/android/DU
 . build/envsetup.sh
-lunch du_sunfish-userdebug # You can replace sunfish with any official device to have it build a nightly for you
+lunch du_sunfish-userdebug
 mka bacon
-
-# Remove this step if you do not want it to copy the files to /var/www/dl
-
-echo "Uploading to DL site"
-mv /var/www/dl/sunfish/DU/du_sunfish.zip /var/www/dl/sunfish/DU/du_sunfish-prev.zip # just in case the latest build does not boot
-mv /var/www/dl/sunfish/DU/boot.img /var/www/dl/sunfish/DU/boot-prev.img # just in case the latest build does not boot
-cp /opt/android/DU/out/target/product/sunfish/du_sunfish-v*.zip /var/www/dl/sunfish/DU/du_sunfish.zip
-cp /opt/android/DU/out/target/product/sunfish/boot.img /var/www/dl/sunfish/DU/boot.img
-
-echo "Clean up of build dir" # To prevent a lot of du_sunfish-v* zips from being an issue later on
-rm -rf /opt/android/DU/out/target/product/sunfish/du_sunfish-*.zip*
