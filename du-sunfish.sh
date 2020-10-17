@@ -20,7 +20,7 @@ echo "Cloning DirtyUnicorns source"
 git config --global user.name "Fake Name"
 git config --global user.email "fake@example.com"
 repo init -u https://github.com/DirtyUnicorns/android_manifest.git -b q10x
-repo sync --current-branch --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
+repo sync --force-sync --prune --optimized-fetch --no-clone-bundle --force-remove-dirty
 
 echo "Now time to build, go take a nap, it'll be done by then (THIS REQUIRES ~250GB OF STORAGE)"
 sleep 5
