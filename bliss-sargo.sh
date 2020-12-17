@@ -15,8 +15,6 @@ sudo chown -R $USER:$USER /opt/android
 cd /opt/android/Bliss
 
 echo "Cloning BlissRoms source"
-git config --global user.name "Fake Name"
-git config --global user.email "fake@example.com"
 repo init -u https://github.com/BlissRoms/platform_manifest.git -b q
 repo sync --current-branch --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
 

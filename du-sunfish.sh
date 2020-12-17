@@ -17,9 +17,6 @@ sudo chown $USER:$USER /opt/android/DU
 cd /opt/android/DU
 
 echo "Cloning DirtyUnicorns source"
-#git config --global user.name "Fake Name"
-#git config --global user.email "fake@example.com"
-echo Please make sure to configure a global username and email with git. You can uncomment the 2 lines above in the script to auto set them.
 sleep 5
 repo init -u https://github.com/DirtyUnicorns/android_manifest.git -b r11x
 repo sync --force-sync --prune --optimized-fetch --no-clone-bundle --force-remove-dirty
