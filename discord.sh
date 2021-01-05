@@ -3,6 +3,7 @@
 ############
 # Env shit #
 ############
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 url=https://ws75.aptoide.com/api/7/app/getMeta?package_name=com.discord
 ver=`curl -sL $url | jq -r '.data.file.vercode'`
 
@@ -17,4 +18,4 @@ git add .
 git commit -a -m "update to $ver"
 git push
 cd ..
-rm *discord*
+rm -rf *discord*
