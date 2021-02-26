@@ -11,7 +11,7 @@ cd /tmp
 curl -sL $url | jq -r '.data.file.path' | wget -i -
 mv *.apk com.discord.apk
 apktool d com.discord.apk
-git clone https://git.46620.moe/46620/discord.git
+git clone https://git.46620.moe/ctc-femboy/discord.git
 rm -rf discord/com.discord
 cp -r com.discord discord
 cd discord
