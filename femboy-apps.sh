@@ -46,4 +46,4 @@ git add .
 git commit -a -m "update to $ver"
 git push
 cd ..
-rm *instagram*
+rm -rf *instagram*
