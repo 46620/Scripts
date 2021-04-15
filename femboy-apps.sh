@@ -15,11 +15,11 @@ ver=`curl -sL $url | jq -r '.data.file.vercode'`
 
 cd /tmp
 curl -sL $url | jq -r '.data.file.path' | wget -i -
-mv *.apk com.discord.apk
-apktool d com.discord.apk
+mv *.apk com.discord-$ver.apk
+apktool d com.discord-$ver.apk
 git clone https://git.46620.moe/femboy-apps/discord/discord.git
 rm -rf discord/com.discord
-cp -r com.discord discord
+cp -r com.discord-$ver discord/com.discord
 cd discord
 git add .
 git commit -a -m "update to $ver"
