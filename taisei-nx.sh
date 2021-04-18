@@ -8,3 +8,4 @@ mkdir -p ./build/nx
 meson --prefix=`pwd`/build/nx/switch --cross-file="./build/nx/crossfile.txt" . ./build/nx
 ninja -C ./build/nx
 ninja install -C ./build/nx
+zip -r taisei-nx.zip build/nx/switch/
