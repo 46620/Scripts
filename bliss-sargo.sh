@@ -6,7 +6,7 @@ sudo apt install bc bison build-essential ccache curl flex g++-multilib gcc-mult
 echo "Installing latest version of repo"
 sudo curl https://storage.googleapis.com/git-repo-downloads/repo > repo
 sudo mv repo /usr/local/bin/repo
-sudo chmod a+x /usr/local/bin/repo
+sudo chmod a+wx /usr/local/bin/repo # making writeable cause repo updates a lot now
 
 echo "Creating work directory"
 sleep 1
