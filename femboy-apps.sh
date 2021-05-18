@@ -35,26 +35,3 @@ else
         echo "Hashes do not match, not going to push to gitlab"
         rm -rf *discord*
 fi
-
-#############
-# Instagram #
-#############
-
-url=https://ws75.aptoide.com/api/7/app/getMeta?package_name=com.instagram.android
-ver=`curl -sL $url | jq -r '.data.file.vercode'`
-
-cd /tmp
-curl -sL $url | jq -r '.data.file.path' | wget -i -
-mv *.apk com.instagram.apk
-apktool d com.instagram.apk
-git clone https://git.46620.moe/femboy-apps/instagram/instagram.git
-rm -rf instagram/com.instagram
-cp -r com.instagram instagram
-cd instagram
-git add .
-git commit -a -m "update to $ver"
-git push
-cd ..
-rm -rf *instagram*
-
-# You might be asking why I didn't do any md5 verification for instagram, it's because it has never given me an issue when I pull it from aptoide
