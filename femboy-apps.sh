@@ -35,3 +35,32 @@ else
         echo "Hashes do not match, not going to push to gitlab"
         rm -rf *discord*
 fi
+
+##########
+# Tiktok #
+##########
+url=https://ws75.aptoide.com/api/7/app/getMeta?package_name=com.zhiliaoapp.musically
+ver=`curl -sL $url | jq -r '.data.file.vercode'`
+md5=`curl -sL $url | jq -r '.data.file.md5sum'`
+
+cd /tmp
+rm -rf *tiktok* # just in case something survived the first one that caused issues in the script
+curl -sL $url | jq -r '.data.file.path' | wget -i -
+mv *.apk com.tiktok-$ver.apk
+md5sum com.tiktok-$ver.apk > tiktok.md5
+
+if md5sum --status -c tiktok.md5; then
+        apktool d com.tiktok-$ver.apk
+        git clone https://git.46620.moe/femboy-apps/tiktok/tiktok.git
+        rm -rf tiktok/com.tiktok
+        cp -r com.tiktok-$ver tiktok/com.tiktok
+        cd tiktok
+        git add .
+        git commit -a -m "update to $ver"
+        git push
+        cd ..
+        rm -rf *tiktok*
+else
+        echo "Hashes do not match, not going to push to gitlab"
+        rm -rf *tiktok*
+fi
