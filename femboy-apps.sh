@@ -12,7 +12,6 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 ###########
 url=https://ws75.aptoide.com/api/7/app/getMeta?package_name=com.discord
 ver=`curl -sL $url | jq -r '.data.file.vercode'`
-md5=`curl -sL $url | jq -r '.data.file.md5sum'`
 
 cd /tmp
 rm -rf *discord* # just in case something survived the first one that caused issues in the script
@@ -41,7 +40,6 @@ fi
 ##########
 url=https://ws75.aptoide.com/api/7/app/getMeta?package_name=com.zhiliaoapp.musically
 ver=`curl -sL $url | jq -r '.data.file.vercode'`
-md5=`curl -sL $url | jq -r '.data.file.md5sum'`
 
 cd /tmp
 rm -rf *tiktok* # just in case something survived the first one that caused issues in the script
