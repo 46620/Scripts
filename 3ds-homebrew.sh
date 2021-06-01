@@ -55,15 +55,34 @@ wget "https://github.com/ihaveamac/ctr-no-timeoffset/releases/download/v1.1/ctr-
 
 echo "Putting homebrew files in correct locations"
 mv *.cia cias
-mv *3dsx 3ds
+mv *.3dsx 3ds
 mv 3ds/boot.3dsx $script_start
 
-###########
-# Archive #
-###########
-echo "Create zip archive"
+#################
+# First Archive #
+#################
+echo "Making cleanSD zip archive"
 mkdir ../out
-7z a -tzip "../out/latest.zip" *
+7z a -tzip "../out/latest-cleanSD.zip" *
+
+##############
+# browserhax #
+##############
+echo "Downloading browserhax files"
+wget -O "arm11code.bin" "https://github.com/TuxSH/universal-otherapp/releases/download/v1.3.0/otherapp.bin" # I do not think this is gonna get many updates, if it starts updating a lot I'll use the api
+wget -O "boot9strap.zip" "https://github.com/SciresM/boot9strap/releases/download/1.3/boot9strap-1.3.zip" # Has not been updated since 2017, should be no reason to call the api
+wget -O "SafeB9SInstaller.zip" "https://github.com/d0k3/SafeB9SInstaller/releases/download/v0.0.7/SafeB9SInstaller-20170605-122940.zip" # Same reason as above
+unzip boot9strap.zip
+rm boot9strap.zip
+mkdir boot9strap
+mv boot9strap.fir* boot9strap
+mkdir tmp;mv SafeB9SInstaller.zip tmp;cd tmp;unzip SafeB9SInstaller.zip; mv SafeB9SInstaller.bin ..;cd ..;rm -rf tmp
+rm *.zip
+
+######################
+# browserhax archive #
+######################
+7z a -tzip "../out/latest-browserhax.zip" *
 
 ###########
 # Credits #
@@ -71,4 +90,5 @@ mkdir ../out
 # One liner to download latest release: https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8#gistcomment-2724872
 # My friend Logan for being in voice with my while not doing his school work
 # Will Stetson for making the music I am listening to while doing this https://www.youtube.com/watch?v=8daZtdrFmBY
+# My friend Brandon's DS that had a broken start button making it so I had to use browserhax and add the second zip file
 # My boyfriend for letting me use him as a pillow a few times a week to keep me alive
