@@ -5,16 +5,14 @@
 ###################
 # Fucking kill me #
 ###################
-mkdir -p tmp/{3ds,cias,luma/payloads} # saves me the slightest bit of time later
-cd tmp
+mkdir -p {3ds,cias,luma/payloads} # saves me the slightest bit of time later
 export script_start=`pwd`
 ########
 # Luma #
 ########
 echo "Downloading Luma"
 curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/LumaTeam/Luma3DS/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
-unzip Luma3DSv*.zip
-rm Luma3DSv*.zip
+unzip Luma3DSv*.zip;rm Luma3DSv*.zip
 
 #################
 # Homebrew apps #
@@ -62,8 +60,7 @@ mv 3ds/boot.3dsx $script_start
 # First Archive #
 #################
 echo "Making cleanSD zip archive"
-mkdir ../out
-7z a -tzip "../out/latest-cleanSD.zip" *
+7z a -tzip "out/latest-cleanSD.zip" *
 
 ##############
 # browserhax #
@@ -82,7 +79,8 @@ rm *.zip
 ######################
 # browserhax archive #
 ######################
-7z a -tzip "../out/latest-browserhax.zip" *
+echo "Making browserhax archive"
+7z a -tzip "out/latest-browserhax.zip" * -x\!out
 
 ###########
 # Credits #

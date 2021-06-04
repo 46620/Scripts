@@ -2,12 +2,6 @@
 # THIS WILL NOT DOWNLOAD SIG PATCHES!  #
 ########################################
 
-###################
-# Fucking kill me #
-###################
-mkdir tmp
-cd tmp
-
 #######################
 # Hekate & Atmosphere #
 #######################
@@ -43,56 +37,45 @@ rm bootlogos.zip
 #################
 
 echo "Adding nx-mtp"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/retronx-team/mtp-server-nx/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
-mv mtp-server-nx.nro switch/
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/retronx-team/mtp-server-nx/releases/latest | jq -r '.assets[0].browser_download_url' | wget -O "switch/mtp-server-nx.nro" -i -
 
 echo "Adding hb_appstore"
 curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/fortheusers/hb-appstore/releases/latest | jq -r '.assets[2].browser_download_url' | wget -i -
-unzip switch-extracttosd.zip
-rm switch-extracttosd.zip
+unzip switch-extracttosd.zip;rm switch-extracttosd.zip
 
 echo "Adding ftpd"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/mtheall/ftpd/releases/latest | jq -r '.assets[12].browser_download_url' | wget -i -
-mv ftpd.nro switch/
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/mtheall/ftpd/releases/latest | jq -r '.assets[12].browser_download_url' | wget -O "switch/ftpd.nro" -i -
 
 echo "Adding Goldleaf"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/XorTroll/Goldleaf/releases | grep -wo "https.*eaf.nro" | head -1 | wget -i -
-mv Goldleaf.nro switch/
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/XorTroll/Goldleaf/releases | grep -wo "https.*eaf.nro" | head -1 | wget -O "switch/Goldleaf.nro" -i -
 
 echo "Adding Checkpoint"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[2].browser_download_url' | wget -i -
-mv Checkpoint.nro switch/
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[2].browser_download_url' | wget -O "switch/Checkpoint.nro" -i -
 
 echo "Adding NX-Shell"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/joel16/NX-Shell/releases/latest | jq -r '.assets[].browser_download_url' | wget -i -
-mv NX-Shell.nro switch/
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/joel16/NX-Shell/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "switch/NX-Shell.nro" -i -
 
 echo "Adding NXThemeInstaller"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/exelix11/SwitchThemeInjector/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
-mv NXThemesInstaller.nro switch/
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/exelix11/SwitchThemeInjector/releases/latest | jq -r '.assets[0].browser_download_url' | wget -O "switch/NXThemesInstaller.nro" -i -
 
 echo "Adding nxdumptool"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/DarkMatterCore/nxdumptool/releases/latest | jq -r '.assets[].browser_download_url' | wget -i -
-mv nxdumptool.nro switch/
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/DarkMatterCore/nxdumptool/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "switch/nxdumptool.nro" -i -
 
 echo "Adding 90dns tester"
-wget -O switch/Switch_90DNS_tester.nro "https://github.com/meganukebmp/Switch_90DNS_tester/releases/download/v1.0.2/Switch_90DNS_tester.nro"
+wget -O switch/Switch_90DNS_tester.nro "https://github.com/meganukebmp/Switch_90DNS_tester/releases/download/v1.0.3/Switch_90DNS_tester.nro"
 
 ################
 # Payload Shit #
 ################
 
 echo "Adding Lockpick_RCM" # This is the lockpicking lawyer
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/shchmue/Lockpick_RCM/releases/latest | jq -r '.assets[].browser_download_url' | wget -i -
-mv Lockpick_RCM.bin bootloader/payloads
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/shchmue/Lockpick_RCM/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "bootloader/payloads/Lockpick_RCM.bin" -i -
 
 echo "Adding TegraExplorer" 
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/suchmememanyskill/TegraExplorer/releases/latest | jq -r '.assets[].browser_download_url' | wget -i -
-mv TegraExplorer.bin bootloader/payloads
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/suchmememanyskill/TegraExplorer/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "bootloader/payloads/TegraExplorer.bin" -i -
 
 echo "Adding fusee-primary payload"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases/latest | jq -r '.assets[2].browser_download_url' | wget -i -
-mv fusee-primary.bin bootloader/payloads
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases/latest | jq -r '.assets[2].browser_download_url' | wget -O "bootloader/payloads/fusee-primary.bin" -i -
 
 echo "Add Hekate to payloads"
 cp hekate*.bin bootloader/payloads/hekate.bin
@@ -100,18 +83,16 @@ cp hekate*.bin bootloader/payloads/hekate.bin
 echo "Make Hekate reboot_payload"
 mv hekate*.bin atmosphere/reboot_payload.bin
 
-#################################
-# Random shit I was told to add #
-#################################
+#############
+# Frii logo #
+#############
 wget -O bootloader/bootlogo.bmp "https://46620.moe/bootlogo.bmp"
 
 ###########
 # Archive #
 ###########
 echo "Create zip archive"
-mkdir ../out
-7z a -tzip "../out/latest.zip" *
-
+7z a -tzip "out/latest.zip" *
 
 ###########
 # Credits #
@@ -121,4 +102,6 @@ mkdir ../out
 # Nintendo Homebrew for using this as their catalyst pack: https://discord.gg/C29hYvh
 # Cruzmatt22 for being in voice chat: https://images-na.ssl-images-amazon.com/images/I/71hcpuNp7gL._SY445_.jpg
 # Windows 10 for being shit and somehow causing my internet to constantly go down: https://www.microsoft.com/en-us/
+# My computer for constantly BSoD'ing cause I have some memory issues while I try to not make this script bad
+# My brain for figuring out "Oh hey lemme set the path in the actual one liner"
 # My boyfriend for letting me use him as a pillow a few times a week to keep me alive
