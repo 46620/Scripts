@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-echo DU HAVE CLOSED THEIR DOORS! THIS WILL STILL WORK BUT PLEASE USE A DIFFERENT ROM
+echo Dirty Unicorns has shut down. Please use a different rom. This script only exists as a template for future build scripts.
 sleep 10
 echo "Install build dependencies"
 sudo apt install bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses-dev libsdl1.2-dev libssl-dev libwxgtk3.0-gtk3-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev libncurses5 git openjdk-8-jdk python adb fastboot
