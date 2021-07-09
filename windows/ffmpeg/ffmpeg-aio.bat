@@ -144,8 +144,6 @@ echo Ending up here would be confusing ngl, no check is implemented yet so this 
 pause
 exit
 
-
-
 :: Special Options
 
 : scriptupdate
@@ -164,7 +162,7 @@ echo Installing/updating FFMPEG, please wait...
 %SystemRoot%\system32\ping.exe -n 1 github.com >nul
 if errorlevel 1 goto offline
 
-echo This is not implemented yet. Please come back later when I figure this part out.
+cmd ffmpeg-installer.bat
 goto menu
 exit
 
