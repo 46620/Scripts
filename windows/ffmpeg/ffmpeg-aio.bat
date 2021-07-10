@@ -5,7 +5,6 @@
 :: Allow the user to pass a path and a file with all the flags
 :: Make it so it can take either 0 or 2 inputs, but not 1
 :: Find a cleaner way to do this as the current method is actually very gross and is painful
-:: Figure out a way to implement installing/updating ffmpeg
 :: Find a way to add hw accel
 
 : Script launch
@@ -14,21 +13,16 @@ color 0a
 
 : menu
 clear
-title FFMPEG AIO v0.0.1
+title FFMPEG AIO v0.1
 echo What would you like to do today:
-echo Please note that none of this script is tested. This warning will go away when it was actually tested.
-echo
 echo 1. Encode videos
 echo 2. Encode audios (mp3 only for now)
 echo 99. Update the script
-echo 0. Install/update ffmpeg (NOT IMPLEMENTED)
-echo
 
 set /P menu=Choose a number from above: 
 IF %menu%==1 goto video_encoder
 if %menu%==2 goto audio_only_bitrate
 IF %menu%==99 goto scriptupdate
-IF %menu%==0 goto ffmpegupdate
 goto menu
 exit
 
@@ -36,11 +30,10 @@ exit
 clear
 set is_video=1
 echo What would you like to encode to:
-echo
 echo 1. Encode to h264
 echo 2. Encode to h265 (recommended)
 echo 3. Encode to AV1 (not recommended)
-echo
+
 set /P video_encode=Choose a number from above: 
 goto video_encoder_set
 
@@ -111,11 +104,12 @@ IF %is_video%==0 goto aud_encode
 
 : vid_encode
 mkdir output
-for %%a in (*) DO ffmpeg -i "%%a" -map 0 -c:v %video_encoder% -b:v %video_bitrate%k -c:a %audio_encoder% -b:a %audio_bitrate%k "output\%~na_cut.mkv"
+for %%a in (*) DO ffmpeg -i "%%a" -map 0 -c:v %video_encoder% -b:v %video_bitrate%k -c:a %audio_encoder% -b:a %audio_bitrate%k "output\%%~na_cut.mkv"
+goto finished
 
 : aud_encode
 for %%a in (*) DO ffmpeg -i "%%a" -b:a "%%~nx.mp3"
-
+goto finished
 
 
 :: Setting and checking flags to make sure shit is right
@@ -150,23 +144,19 @@ exit
 title Update the script
 echo Downloading latest version of the script, Please wait...
 %SystemRoot%\system32\ping.exe -n 1 github.com >nul
-if errorlevel 1 goto offline
+IF errorlevel 1 goto offline
 
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/46620/Scripts/master/windows/ffmpeg/ffmpeg-aio.bat', 'ffmpeg-aio.bat')"
-goto menu
-exit
-
-: ffmpegupdate
-title Install/update ffmpeg
-echo Installing/updating FFMPEG, please wait...
-%SystemRoot%\system32\ping.exe -n 1 github.com >nul
-if errorlevel 1 goto offline
-
-cmd ffmpeg-installer.bat
 goto menu
 exit
 
 : offline
 echo Script could not connect to github, this function is disabled.
 goto menu
+exit
+
+: finished
+set /P done=Would you like to encode anything else? (y/N):
+IF %done%==y goto menu
+IF %done%==n exit
 exit

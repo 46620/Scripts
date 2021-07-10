@@ -3,7 +3,6 @@
 :: Stackoverflow post 14639743 helped
 
 @echo off
-
  call :isAdmin
 
  if %errorlevel% == 0 (
@@ -20,7 +19,8 @@
  exit /b
 
  :run
-  <YOUR BATCH SCRIPT HERE>
+  cd /D %SystemRoot%\system32
+  powershell -Command "(New-Object Net.WebClient).DownloadFile('https://dl.46620.moe/script-deps/ffmpeg/ffmpeg.exe', 'ffmpeg.exe')"
  exit /b
 
  :UACPrompt
@@ -31,7 +31,3 @@
    del "%temp%\getadmin.vbs"
   exit /B`
 
-cd /D %SystemRoot%\system32
-powershell -Command "(New-Object Net.WebClient).DownloadFile('https://dl.46620.moe/script-deps/ffmpeg/ffmpeg.exe', 'ffmpeg.exe')"
-cmd ffmpeg-aio.bat
-exit
