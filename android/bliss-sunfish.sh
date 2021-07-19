@@ -24,21 +24,9 @@ repo init -u https://github.com/BlissRoms/platform_manifest.git -b r
 repo sync -c --force-sync --no-tags --no-clone-bundle -j$(nproc --all) --optimized-fetch --prune
 . build/envsetup.sh
 
-echo "Cloning Device files and vendor"
-git clone https://github.com/BlissRoms-Devices/android_device_google_sunfish -b r device/google/sunfish
-git clone https://github.com/BlissRoms-Devices/android_kernel_google_sunfish -b r kernel/google/sunfish
-#git clone https://android.googlesource.com/device/google/sunfish-sepolicy -b android-11.0.0_r34 device/google/sunfish-sepolicy - Pulled with bliss source apparently
-git clone --depth=1 https://github.com/TheMuppets/proprietary_vendor_google vendor/google
-
-#TODO: FIND SEPOLICY ISSUES IF THEY SHOW UP AGAIN
-echo "Fixing SEPolicy issues (WIP)"
-
-#echo "Replacing update server to mine"
-#sed -i 's/https://downloads.blissroms.com/api/v1/updater/{device}/{type}//https://ota.46620.moe/api/v1/{device}/{type}/g' packages/apps/BlissUpdater/res/values/strings.xml
-
 # Hopefully should build
 echo "Setting up CCACHE to save like... 4 hours"
 export USE_CCACHE=1
 export CCACHE_EXEC=/usr/bin/ccache
 ccache -M 100G
-blissify sunfish
+blissify -g sunfish
