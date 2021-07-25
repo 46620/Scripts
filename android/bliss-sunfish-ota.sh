@@ -16,5 +16,5 @@ ccache -M 100G
 blissify -g sunfish
 
 echo "Pushing updates to update server"
-cp $OUT/bliss_sunfish-ota-eng.seanf.zip /var/www/LineageOTA/builds/full/bliss-14.2-$today-nightly-sunfish.zip
-cp $OUT/system/build.prop /var/www/LineageOTA/builds/full/bliss-14.2-$today-nightly-sunfish.zip.prop
+cp $OUT/bliss_sunfish-ota-eng-mia.zip /var/www/ota/builds/bliss-14.5-$today-nightly-sunfish.zip
+cp $OUT/system/build.prop /var/www/LineageOTA/builds/full/bliss-14.5-$today-nightly-sunfish.zip.prop

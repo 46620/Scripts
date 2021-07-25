@@ -15,8 +15,8 @@ ver=`curl -sL $url | jq -r '.data.file.vercode'`
 
 cd /tmp
 rm -rf *discord* # just in case something survived the first one that caused issues in the script
-curl -sL $url | jq -r '.data.file.path' | wget -i -
-mv *.apk com.discord-$ver.apk
+curl -sL $url | jq -r '.data.file.path' | wget -O "com.discord-$ver.apk" -i -
+#mv *.apk com.discord-$ver.apk
 md5sum com.discord-$ver.apk > discord.md5
 
 if md5sum --status -c discord.md5; then

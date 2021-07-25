@@ -24,6 +24,10 @@ repo init -u https://github.com/BlissRoms/platform_manifest.git -b r
 repo sync -c --force-sync --no-tags --no-clone-bundle -j$(nproc --all) --optimized-fetch --prune
 . build/envsetup.sh
 
+# Change the OTA server to mine so my builds pull properly
+echo "Changing OTA server to ota.46620"
+sed -i 's@https://downloads.blissroms.org/api/v1/updater/los/{device}/{variant}/@https://ota.46620.moe/api/v1/{device}/{type}/@g' packages/apps/BlissUpdater/res/values/strings.xml
+
 # Hopefully should build
 echo "Setting up CCACHE to save like... 4 hours"
 export USE_CCACHE=1
