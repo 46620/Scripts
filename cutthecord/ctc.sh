@@ -12,7 +12,7 @@
 ############################
 CTCTOP=/opt/cutthecord
 CTCPATCHESPATH=$CTCTOP/cutthecord/patches
-CTCPATCHES=`ls -Ibranding $CTCPATCHESPATH`
+CTCPATCHES=(`ls -Ibranding -Ibettertm -Iblobs -Icustomfont -Icustomring $CTCPATCHESPATH`)
 CTCBASE=$CTCTOP/com.discord
 CTCRES=$CTCTOP/ctc
 CTCBLOBS=$CTCTOP/blobs
@@ -38,7 +38,7 @@ cutthecord_clone() {
 	echo Cloning repos, please wait.
 	sleep 2
     cd $CTCTOP
-    rm -rvf *
+    rm -rf *
     git clone https://git.46620.moe/femboy-apps/discord/cutthecord.git
     git clone --depth=1 https://git.46620.moe/femboy-apps/discord/discord.git
     cp -r discord/com.discord .
@@ -51,25 +51,33 @@ cutthecord_build() {
 	clear
 	echo Building CTC this will take a moment.
 	sleep 2
-	cd $CTCTOP
 	# credit 5
 	if [ -d "$CTCTOP" ]
 	then
 		if [ "$(ls -A $CTCTOP)" ]
 		then
-	    	cutthecord_path_setup
+	    	keystore_setup
+	    	clear
+	    	echo Patching discord now, please wait...
+	    	sleep 1
+	    	cd $CTCTOP/cutthecord
 			ver=`cat patchport-state.json | jq -r .versioncode`
-			cd patches/branding
-			python3 addpatch.py $ver $CTCNAME $CTCBRANCH
+			cd $CTCTOP/cutthecord/patches/branding
+			python3 addpatch.py $ver.patch $CTCNAME $CTCBRANCH
 			cd $CTCTOP/com.discord
 			# credit 6
-			for cum in $CTCPATCHES
+			for cum in ${CTCPATCHES[@]}
 			do 
 				patch -p1 < $CTCPATCHESPATH/$cum/$ver.patch
-				patch -p1 < $CTCPATCHESPATH/branding/$ver-custom.patch
-				apktool b
-				jarsigner -keystore $KEYSTORE_PATH -storepass $KEYBASE_PASSWD $CTCBASE/dist/com.cuttheccord.$CTCBRANCH-$ver.apk $KEYSTORE_ALIAS
 			done
+			patch -p1 < $CTCPATCHESPATH/branding/$ver-custom.patch
+			python3 $CTCPATCHESPATH/blobs/emojireplace.py
+			sleep 1
+			clear
+			echo "Patches applied, building apk"
+			apktool b
+			echo $KEYSTORE_ALIAS
+			jarsigner -keystore $KEYSTORE_PATH -storepass $KEYSTORE_PASSWD $CTCBASE/dist/com.cutthecord.$CTCBRANCH-$ver.apk $KEYSTORE_ALIAS
 		else
 			echo "$CTCTOP is empty, please run --clone first"
 			exit
@@ -77,6 +85,10 @@ cutthecord_build() {
 	else
 		echo "Directory does not exist, run --setup first"
 	fi
+	sleep 2
+	clear
+	echo "CutTheCord has been built. Please install it either by moving the apk to your phone or adb"
+	echo "The script can also auto install the script if you do --install instead of --build"
 }
 
 cutthecord_install() {
@@ -98,7 +110,7 @@ script_update() {
 	echo This has not been figured out yet, come back later.
 }
 
-cutthecord_path_setup() {
+keystore_setup() {
 	clear
 	read -p "What would you like the app to be called? " CTCNAME
 	read -p "What is the name of this CTC branch? " CTCBRANCH
@@ -119,7 +131,7 @@ cutthecord_path_setup() {
 		echo "CutTheCord branch: $CTCBRANCH"
 		echo "Keystore path: $KEYSTORE_PATH"
 		echo "Keystore alias: $KEYSTORE_ALIAS"
-	        read -p "Is this information correct?" yn
+	        read -p "Is this information correct? " yn
 	        case $yn in
 	            [Yy]* ) break;;
 	            [Nn]* ) exit;;
@@ -129,7 +141,7 @@ cutthecord_path_setup() {
 	else
 		echo "Passwords do not match, Press Enter to try again"
 		read
-		cutthecord_path_setup
+		keystore_setup
 	fi
 }
 
