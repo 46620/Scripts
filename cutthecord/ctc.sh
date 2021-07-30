@@ -2,7 +2,7 @@
 
 # Author: 46620
 # Start time: 2021-07-25
-# Stackoverflow posts that helped: 4277665
+# Stackoverflow posts that helped: 4277665, 630372
 # Scripts that helped: dikiaap/dotfiles install.sh, 
 
 # This script is kind of a "master brain" script I wrote in order to make working on ctc easier.
@@ -26,10 +26,10 @@ Usage: $program_name [-option]
 Options:
     --help    Print this message
     --clone   Cleans and clones the CutTheCord repos
-    --build   Builds CutTheCord from a given directory (currently does not work)
-    --install Builds CutTheCord and Installs it to a connected device (currently does not work)
+    --build   Builds CutTheCord from a given directory
+    --install Builds CutTheCord and Installs it to a connected device
     --setup   Sets up a directory in /opt and installs the last version of apktool
-    --update  Updates the script to the latest (Not implemented yet)
+    --update  Updates the script to the latest
 EOF
 }
 
@@ -93,6 +93,7 @@ cutthecord_build() {
 
 cutthecord_install() {
 	cutthecord_build
+	read -p "Plug your device in and then press [Enter]"
 	echo "Installing to device"
 	adb install $CTCBASE/dist/com.cuttheccord.$CTCBRANCH-$ver.apk
 }
@@ -107,7 +108,15 @@ cutthecord_setup() {
 }
 
 script_update() {
-	echo This has not been figured out yet, come back later.
+    local program_name
+    program_name=${0##*/}
+	clear
+	echo "Updating the script please wait..."
+	sleep 2
+	#stackoverflow 2
+	SCRIPT_PATH="`dirname \"$0\"`"
+	wget -O "$SCRIPT_PATH/$program_name" "https://raw.githubusercontent.com/46620/Scripts/master/cutthecord/ctc.sh"
+	exit
 }
 
 keystore_setup() {
