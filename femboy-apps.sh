@@ -23,7 +23,7 @@ curl -sL $app | jq -r '.data.file.path' | wget -O "com.discord-$ver.apk" -i -
 echo "$md5sum  com.discord-$ver.apk" > discord.md5
 if md5sum --status -c discord.md5; then
         apktool d com.discord-$ver.apk
-        git clone https://booba.tech/femboy-apps/discord/discord.git
+        git clone https://booba.tech/CutTheCord-Femboy/discord.git
         rm -rf discord/com.discord
         cp -r com.discord-$ver discord/com.discord
         cd discord
