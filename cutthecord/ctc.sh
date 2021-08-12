@@ -39,11 +39,11 @@ cutthecord_clone() {
 	sleep 2
     cd $CTCTOP
     rm -rf *
-    git clone https://git.46620.moe/femboy-apps/discord/cutthecord.git
-    git clone --depth=1 https://git.46620.moe/femboy-apps/discord/discord.git
+    git clone https://booba.tech/femboy-apps/discord/cutthecord.git
+    git clone --depth=1 https://booba.tech/femboy-apps/discord/discord.git
     cp -r discord/com.discord .
-    git clone https://git.46620.moe/femboy-apps/discord/blobs.git
-    git clone https://git.46620.moe/femboy-apps/discord/ctc.git
+    git clone https://booba.tech/femboy-apps/discord/blobs.git
+    git clone https://booba.tech/femboy-apps/discord/ctc.git
     echo "Clone complete, please update your patches or run the build command"
 }
 
