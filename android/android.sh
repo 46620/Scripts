@@ -39,6 +39,7 @@ find_linux(){
 		[arch]) android_deps_arch;;
         [debain]) android_deps_deb;;
         [fedora]) android_deps_fedora;;
+        esac
 }
 
 android_deps_arch() {
