@@ -28,9 +28,9 @@ esac
 
 mkdir tmp
 cd tmp
-CTCTOP=`pwd`
-CTCPATCHESPATH=$CTCTOP/cutthecord/patches
-CTCBASE=$CTCTOP/com.discord
+CTCTOP="`pwd`"
+CTCPATCHESPATH="$CTCTOP/cutthecord/patches"
+CTCBASE="$CTCTOP/com.discord"
 
 git clone https://booba.tech/CutTheCord/cutthecord.git
 git clone --depth=1 https://booba.tech/CutTheCord/discord.git
@@ -40,37 +40,37 @@ if [[ USE_BLOBS -eq 1 ]]
 then
     git clone https://booba.tech/CutTheCord/blobs.git
     cd blobs
-    export DISTOK_EMOJI_BLOBMOJI=`pwd`
-    cd ..
+    export DISTOK_EMOJI_BLOBMOJI="`pwd`"
+    cd "$CTCTOP"
 elif [[ USE_MUTANT -eq 1 ]]
 then
     echo "Mutant is currently not supported."
 fi
 
-cd cutthecord
+cd "$CTCTOP/cutthecord"
 export ver=`cat patchport-state.json | jq -r .versioncode`
 cd patches/branding
 python3 addpatch.py $ver.patch $CTCBRANCH $CTCFORK
-cd $CTCBASE
+cd "$CTCBASE"
 export DISTOK_EXTRACTED_DISCORD_PATH=`pwd`
 for cum in ${CTCPATCHES[@]}
     do
-    	patch -p1 < "../cutthecord/patches/$cum/$ver.patch"
+    	patch -p1 < "$CTCPATCHESPATH/$cum/$ver.patch"
 done
 
-patch -p1 < "../cutthecord/patches/branding/$ver-custom.patch"
+patch -p1 < "$CTCPATCHESPATH/branding/$ver-custom.patch"
 
 if [[ USE_BLOBS -eq 1 ]]
 then
-    python3 "../cutthecord/patches/blobs/emojireplace.py"
+    python3 "$CTCPATCHESPATH/blobs/emojireplace.py"
 elif [[ USE_MUTANT -eq 1 ]]
 then
     echo "Mutant is currently not supported."
 fi
 
-cd ..
+cd $CTCTOP
 git clone https://booba.tech/CutTheCord/ctc.git -b $user
-cd com.discord
+cd $CTCBASE
 cp -rv ../ctc/res .
 
 if [[ CUSTOM_ICON -eq 1 ]]
