@@ -3,8 +3,8 @@
 # This is a rework of my old auto ctc script to support multiple builds
 # For some reason when I did this all in functions it decided to just be a fuck fest of race conditions
 # Branding, customversion, and eventually notrack and nonearby will be included in all builds by default
-echo $JOB_NAME_BASE
-user=`echo $JOB_NAME_BASE | cut -c 12-`
+echo $JOB_BASE_NAME
+user=`echo $JOB_BASE_NAME | cut -c 12-`
 echo $user
 case "$user" in
     46620)
