@@ -16,10 +16,13 @@ Usage: $program_name [--option]
 Options:
     --help    Print this message
     --clone   Cleans and clones the CutTheCord repos
-    --build   Builds CutTheCord from a given directory
     --install Installs this script to your /usr/local/bin directory for easy running
-    --setup   Sets up a directory in /opt and installs the last version of apktool
+    --setup   Sets up a directory in /opt and installs some basic jar files
     --update  Updates the script to the latest
+
+Info: This script is no longer used for building cutthecord, it's simply for updating patches.
+      If you want to see the build script, please check out the jenkins script.
+      This message will be removed next commit.
 EOF
 }
 
@@ -28,97 +31,38 @@ cutthecord_clone() {
 	clear
 	echo "Cloning repos, please wait."
 	sleep 2
-    cd $CTCTOP
-    rm -rf *
-	echo "Cloning patches"
-    git clone --quiet https://booba.tech/CutTheCord/cutthecord.git
-	echo "Cloning discord"
-    git clone --quiet --depth=1 https://booba.tech/CutTheCord/discord.git
-    cp -r discord/com.discord .
-	rm -rf discord
-	echo "Cloning blobs"
-    git clone --quiet https://booba.tech/CutTheCord/blobs.git
-	sleep 1
-	echo "Grabbing tools"
-	mkdir tools
-    wget -O $CTCTOOLS/xml-patch.jar https://jcenter.bintray.com/com/github/dnault/xml-patch/0.3.1/xml-patch-0.3.1.jar
-	wget -O $CTCTOOLS/dex2jar.jar https://github.com/Aliucord/dex2jar/releases/download/v19-fork2/dex2jar.jar
-
-    echo "Clone complete, please update your patches or run the build command"
-}
-
-cutthecord_build() {
-	clear
-	echo "Currently the build script is being reworked for a new method of building."
-	exit
-	echo "Building CTC this will take a moment."
-	env_vars
-	sleep 2
-	# credit 5
 	if [ -d "$CTCTOP" ]
 	then
-		if [ "$(ls -A $CTCTOP)" ]
-		then
-	    	keystore_setup
-	    	clear
-	    	echo "Patching discord now, please wait..."
-	    	sleep 1
-	    	cd $CTCTOP/cutthecord
-			ver=`cat patchport-state.json | jq -r .versioncode`
-			cd $CTCTOP/cutthecord/patches/branding
-			python3 addpatch.py $ver.patch $CTCNAME $CTCBRANCH
-			cd $CTCTOP/com.discord
-			# credit 6
-			for cum in ${CTCPATCHES[@]}
-			do 
-				patch -p1 < $CTCPATCHESPATH/$cum/$ver.patch
-			done
-
-			for cum2 in ${CTCXMLPATCHES[@]}
-			do
-				java -cp $CTCTOOLS/xml-patch.jar com.github.dnault.xmlpatch.BatchPatcher --patch $CTCXMLPATCHESPATH/$cum/$ver.patch --srcdir $CTCBASE
-			done
-			
-			patch -p1 < $CTCPATCHESPATH/branding/$ver-custom.patch
-			python3 $CTCPATCHESPATH/blobs/emojireplace.py
-			sleep 1
-			clear
-			echo "Patches applied, building apk"
-			apktool b
-			jarsigner -keystore $KEYSTORE_PATH -storepass $KEYSTORE_PASSWD $CTCBASE/dist/com.cutthecord.$CTCBRANCH-$ver.apk $KEYSTORE_ALIAS
-		else
-			echo "$CTCTOP is empty, please run --clone first"
-			exit
-		fi
+        cd $CTCTOP
+        rm -rf *
+	    echo "Cloning patches"
+        git clone --quiet https://booba.tech/CutTheCord/cutthecord.git
+	    echo "Cloning discord"
+        git clone --quiet --depth=1 https://booba.tech/CutTheCord/discord.git
+        cp -r discord/com.discord .
+	    rm -rf discord
+	    echo "Grabbing tools"
+	    mkdir tools
+	    curl -sL https://api.github.com/repos/Aliucord/dex2jar/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "$CTCTOOLS/dex2jar.jar" -i -
 	else
-		echo "Directory does not exist, run --setup first"
+	    echo "Please run the setup command before running this."
 	fi
-	sleep 2
-	clear
-	echo "CutTheCord has been built. Please install it either by moving the apk to your phone or adb"
-	exit
-	#TODO: RUN INSTALLATION COMMAND HERE
-	read -p "Plug your device in and then press [Enter]"
-	echo "Installing to device"
-	adb install $CTCBASE/dist/com.cuttheccord.$CTCBRANCH-$ver.apk
 }
 
-cutthecord_install() {
-	echo "Installing script to /usr/local/bin"
+script_install() {
+	echo "Installing/Updating script to /usr/local/bin"
 	sudo wget -O "/usr/local/bin/ctc" https://raw.githubusercontent.com/46620/Scripts/master/cutthecord/ctc.sh
 	sudo chmod +x "/usr/local/bin/ctc"
-
 }
 
 cutthecord_setup() {
-	clear
-	echo "Setting up cuttheccord environment"
-	env_vars
-	sleep 1
-	sudo mkdir -p $CTCTOP
-	sudo chown $USER:$USER $CTCTOP
-	sudo wget -O "/usr/local/bin/apktool" https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
-	sudo wget -O "/usr/local/bin/apktool.jar" https://ci.46620.moe/job/Auto%20Builds/job/apktool/lastSuccessfulBuild/artifact/brut.apktool/apktool-cli/build/libs/apktool-cli-all.jar
+    clear
+    echo "Setting up cuttheccord environment"
+    env_vars
+    sleep 1
+    sudo mkdir -p $CTCTOP
+    sudo chown $USER:$USER $CTCTOP
+	curl -sL https://booba.tech/CutTheCord/warppers/raw/branch/master/setup.sh | bash
 }
 
 script_update() {
@@ -133,53 +77,10 @@ script_update() {
 	exit
 }
 
-keystore_setup() {
-	clear
-	read -p "What would you like the app to be called? " CTCNAME
-	read -p "What is the name of this CTC branch? " CTCBRANCH
-	read -p "Where is your keystore file? " KEYSTORE_PATH
-	read -p "What is the keystore alias? " KEYSTORE_ALIAS
-	echo "What is your keystore password? "
-	read -s KEYSTORE_PASSWD
-	echo "Type your password again: "
-	read -s KEYSTORE_PASSWD_VERIFY
-	clear
-	# stackoverflow 1
-	if [[ $KEYSTORE_PASSWD == $KEYSTORE_PASSWD_VERIFY ]]
-	then
-		# credit 4
-		while true; do
-		clear
-		echo "CutTheCord name: $CTCNAME"
-		echo "CutTheCord branch: $CTCBRANCH"
-		echo "Keystore path: $KEYSTORE_PATH"
-		echo "Keystore alias: $KEYSTORE_ALIAS"
-	        read -p "Is this information correct? " yn
-	        case $yn in
-	            [Yy]* ) break;;
-	            [Nn]* ) exit;;
-	            * ) echo "Please answer yes or no.";;
-	        esac
-	    done
-	else
-		echo "Passwords do not match, Press Enter to try again"
-		read
-		keystore_setup
-	fi
-}
-
 env_vars(){
 	CTCTOP=/opt/cutthecord
     CTCTOOLS=$CTCTOP/tools
-    CTCRESOURCES=$CTCTOP/cutthecord/resources
-    CTCPATCHESPATH=$CTCRESOURCES/patches
-    CTCPATCHES=(`ls -Ibranding -Ibettertm -Iblobs -Icustomfont -Icustomring $CTCPATCHESPATH`)
-    CTCXMLPATCHESPATH=$CTCRESOURCES/xmlpatches
-    CTCXMLPATCHES=(`ls $CTCXMLPATCHESPATH`)
-    CTCBASE=$CTCTOP/com.discord
-    CTCBLOBS=$CTCTOP/blobs
 }
-
 
 main() {
     
@@ -188,17 +89,14 @@ main() {
             usage
             exit 0
             ;;
+        --setup)
+            cutthecord_setup
+            ;;
         --clone)
             cutthecord_clone
             ;;
-        --build)
-            cutthecord_build
-            ;;
         --install)
-            
-            ;;
-        --setup)
-            cutthecord_setup
+            script_install
             ;;
         --update)
             script_update
