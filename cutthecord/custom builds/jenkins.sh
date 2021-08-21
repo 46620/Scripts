@@ -40,7 +40,7 @@ CTCPATCHESPATH="$CTCTOP/cutthecord/resources/patches"
 CTCXMLPATCHESPATH="$CTCTOP/cutthecord/resources/xmlpatches"
 CTCBASE="$CTCTOP/com.discord"
 
-git clone https://booba.tech/CutTheCord/cutthecord.git -b rewrite
+git clone https://booba.tech/CutTheCord/cutthecord.git
 git clone --depth=1 https://booba.tech/CutTheCord/discord.git
 cp -r discord/com.discord .
 
