@@ -11,8 +11,12 @@
 # Quick gross dump of vars #
 ############################
 CTCTOP=/opt/cutthecord
-CTCPATCHESPATH=$CTCTOP/cutthecord/patches
+CTCTOOLS=$CTCTOP/tools
+CTCRESOURCES=$CTCTOP/cutthecord/resources
+CTCPATCHESPATH=$CTCRESOURCES/patches
 CTCPATCHES=(`ls -Ibranding -Ibettertm -Iblobs -Icustomfont -Icustomring $CTCPATCHESPATH`)
+CTCXMLPATCHESPATH=$CTCRESOURCES/xmlpatches
+CTCXMLPATCHES=(`ls $CTCXMLPATCHESPATH`)
 CTCBASE=$CTCTOP/com.discord
 CTCRES=$CTCTOP/ctc
 CTCBLOBS=$CTCTOP/blobs
@@ -35,21 +39,34 @@ EOF
 
 cutthecord_clone() {
 	clear
-	echo Cloning repos, please wait.
+	echo "Cloning repos, please wait."
 	sleep 2
     cd $CTCTOP
     rm -rf *
-    git clone https://booba.tech/CutTheCord/cutthecord.git
-    git clone --depth=1 https://booba.tech/CutTheCord/discord.git
+	echo "Cloning patches"
+    git clone --quiet https://booba.tech/CutTheCord/cutthecord.git
+	echo "Cloning discord"
+    git clone --quiet --depth=1 https://booba.tech/CutTheCord/discord.git
     cp -r discord/com.discord .
-    git clone https://booba.tech/CutTheCord/blobs.git
-    git clone https://booba.tech/CutTheCord/ctc.git
+	rm -rf discord
+	echo "Cloning blobs"
+    git clone --quiet https://booba.tech/CutTheCord/blobs.git
+	echo "Cloning misc res files"
+    git clone --quiet https://booba.tech/CutTheCord/ctc.git
+	sleep 1
+	echo "Grabbing tools"
+	mkdir tools
+    wget -O $CTCTOOLS/xml-patch.jar https://jcenter.bintray.com/com/github/dnault/xml-patch/0.3.1/xml-patch-0.3.1.jar
+	wget -O $CTCTOOLS/dex2jar.jar https://github.com/Aliucord/dex2jar/releases/download/v19-fork2/dex2jar.jar
+
     echo "Clone complete, please update your patches or run the build command"
 }
 
 cutthecord_build() {
 	clear
-	echo Building CTC this will take a moment.
+	echo "Currently the build script is being reworked for a new method of building."
+	exit
+	echo "Building CTC this will take a moment."
 	sleep 2
 	# credit 5
 	if [ -d "$CTCTOP" ]
@@ -58,7 +75,7 @@ cutthecord_build() {
 		then
 	    	keystore_setup
 	    	clear
-	    	echo Patching discord now, please wait...
+	    	echo "Patching discord now, please wait..."
 	    	sleep 1
 	    	cd $CTCTOP/cutthecord
 			ver=`cat patchport-state.json | jq -r .versioncode`
@@ -70,13 +87,18 @@ cutthecord_build() {
 			do 
 				patch -p1 < $CTCPATCHESPATH/$cum/$ver.patch
 			done
+
+			for cum2 in ${CTCXMLPATCHES[@]}
+			do
+				java -cp $CTCTOOLS/xml-patch.jar com.github.dnault.xmlpatch.BatchPatcher --patch $CTCXMLPATCHESPATH/$cum/$ver.patch --srcdir $CTCBASE
+			done
+			
 			patch -p1 < $CTCPATCHESPATH/branding/$ver-custom.patch
 			python3 $CTCPATCHESPATH/blobs/emojireplace.py
 			sleep 1
 			clear
 			echo "Patches applied, building apk"
 			apktool b
-			echo $KEYSTORE_ALIAS
 			jarsigner -keystore $KEYSTORE_PATH -storepass $KEYSTORE_PASSWD $CTCBASE/dist/com.cutthecord.$CTCBRANCH-$ver.apk $KEYSTORE_ALIAS
 		else
 			echo "$CTCTOP is empty, please run --clone first"
