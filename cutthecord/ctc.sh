@@ -125,6 +125,7 @@ cutthecord_setup() {
 	echo "Setting up cuttheccord environment"
 	sleep 1
 	sudo mkdir -p $CTCTOP
+	sudo chown $USER:$USER $CTCTOP
 	sudo wget -O "/usr/local/bin/apktool" https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
 	sudo wget -O "/usr/local/bin/apktool.jar" https://ci.46620.moe/job/Auto%20Builds/job/apktool/lastSuccessfulBuild/artifact/brut.apktool/apktool-cli/build/libs/apktool-cli-all.jar
 }
