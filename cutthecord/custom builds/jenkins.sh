@@ -16,7 +16,7 @@ case "$user" in
         CTCFORK=femboy
         ;;
     t3ch)
-        CTCPATCHES=(betterdmheader)
+        CTCPATCHES=(betterdmheader profilemention)
         USE_BLOBS=0
         USE_MUTANT=0
         CTCBRANCH=Discord
