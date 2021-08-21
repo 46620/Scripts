@@ -69,9 +69,9 @@ then
     echo "Mutant is currently not supported."
 fi
 
-cd $CTCTOP
+cd "$CTCTOP"
 git clone https://booba.tech/CutTheCord/ctc.git -b $user
-cd $CTCBASE
+cd "$CTCBASE"
 cp -rv ../ctc/res .
 
 if [[ CUSTOM_ICON -eq 1 ]]
