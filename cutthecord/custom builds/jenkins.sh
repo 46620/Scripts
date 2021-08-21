@@ -74,8 +74,8 @@ cp -rv ../cutthecord/ressources/$user/res .
 
 if [[ CUSTOM_ICON -eq 1 ]]
 then
-    bash "CTCPATCHESPATH/branding/customicon.sh"
-    bash "CTCPATCHESPATH/branding/customdynamicicon.sh"
+    bash "$CTCPATCHESPATH/branding/customicon.sh"
+    bash "$CTCPATCHESPATH/branding/customdynamicicon.sh"
 fi
 
 apktool b
