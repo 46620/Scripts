@@ -8,17 +8,22 @@ user=`echo $JOB_BASE_NAME | cut -c 12-`
 echo $user
 case "$user" in
     46620)
-        CTCPATCHES=(betterdmheader customversion disable-mobileindicator noblocked squareavatars)
+        CTCPATCHES=(betterdmheader customversion disable-mobileindicator profilemention)
+        XMLPATCHES=(betterdmheader noblocked squareavatars)
         USE_BLOBS=1
         USE_MUTANT=0
+        CUSTOM_RES=1
         CUSTOM_ICON=1
         CTCBRANCH=CutTheCord
         CTCFORK=femboy
         ;;
     t3ch)
         CTCPATCHES=(betterdmheader profilemention)
+        XMLPATCHES=(betterdmheader)
         USE_BLOBS=0
         USE_MUTANT=0
+        CUSTOM_RES=1
+        CUSTOM_ICON=0
         CTCBRANCH=Discord
         CTCFORK=disnuts
     ;;
@@ -30,10 +35,12 @@ esac
 mkdir tmp
 cd tmp
 CTCTOP="`pwd`"
-CTCPATCHESPATH="$CTCTOP/cutthecord/patches"
+CTCRES="$CTCTOP/cutthecord/resources/res"
+CTCPATCHESPATH="$CTCTOP/cutthecord/resources/patches"
+CTCXMLPATCHESPATH="$CTCTOP/cutthecord/resources/xmlpatches"
 CTCBASE="$CTCTOP/com.discord"
 
-git clone https://booba.tech/CutTheCord/cutthecord.git
+git clone https://booba.tech/CutTheCord/cutthecord.git -b rewrite
 git clone --depth=1 https://booba.tech/CutTheCord/discord.git
 cp -r discord/com.discord .
 
@@ -48,7 +55,7 @@ then
     echo "Mutant is currently not supported."
 fi
 
-cd "$CTCTOP/cutthecord"
+cd "$CTCTOP/cutthecord/resources/"
 export ver=`cat patchport-state.json | jq -r .versioncode`
 cd patches/branding
 python3 addpatch.py $ver.patch $CTCBRANCH $CTCFORK
@@ -59,7 +66,15 @@ for cum in ${CTCPATCHES[@]}
     	patch -p1 < "$CTCPATCHESPATH/$cum/$ver.patch"
 done
 
+for cum2 in ${XMLPATCHES[@]}
+    do
+    	xml-patch --patch "$CTCXMLPATCHESPATH/$cum2/$ver.xml" --srcdir "$CTCBASE"
+done
+
 patch -p1 < "$CTCPATCHESPATH/branding/$ver-custom.patch"
+patch -p1 < "$CTCPATCHESPATH/notrack/$ver.patch"
+xml-patch --patch "$CTCXMLPATCHESPATH/notrack/$ver.xml" --srcdir "$CTCBASE"
+#bash "$CTCPATCHESPATH/notrack/$ver-post.sh" <-- This caused the app to not start
 
 if [[ USE_BLOBS -eq 1 ]]
 then
@@ -69,8 +84,10 @@ then
     echo "Mutant is currently not supported."
 fi
 
-#git clone -b $user https://booba.tech/CutTheCord/ctc.git $CTCTOP/ctc
-cp -rv ../cutthecord/resources/$user/res .
+if [[ CUSTOM_RES -eq 1 ]]
+then
+cp -rv ../cutthecord/resources/res/$user/res .
+fi
 
 if [[ CUSTOM_ICON -eq 1 ]]
 then
