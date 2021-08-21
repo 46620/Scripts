@@ -70,7 +70,7 @@ then
 fi
 
 #git clone -b $user https://booba.tech/CutTheCord/ctc.git $CTCTOP/ctc
-cp -rv $CTCTOP/cutthecord/ressources/$user/res .
+cp -rv ../cutthecord/ressources/$user/res .
 
 if [[ CUSTOM_ICON -eq 1 ]]
 then
