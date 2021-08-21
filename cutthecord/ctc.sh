@@ -18,7 +18,6 @@ CTCPATCHES=(`ls -Ibranding -Ibettertm -Iblobs -Icustomfont -Icustomring $CTCPATC
 CTCXMLPATCHESPATH=$CTCRESOURCES/xmlpatches
 CTCXMLPATCHES=(`ls $CTCXMLPATCHESPATH`)
 CTCBASE=$CTCTOP/com.discord
-CTCRES=$CTCTOP/ctc
 CTCBLOBS=$CTCTOP/blobs
 
 # Print usage message.
@@ -51,8 +50,6 @@ cutthecord_clone() {
 	rm -rf discord
 	echo "Cloning blobs"
     git clone --quiet https://booba.tech/CutTheCord/blobs.git
-	echo "Cloning misc res files"
-    git clone --quiet https://booba.tech/CutTheCord/ctc.git
 	sleep 1
 	echo "Grabbing tools"
 	mkdir tools
