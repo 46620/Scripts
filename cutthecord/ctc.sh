@@ -52,6 +52,7 @@ cutthecord_clone() {
 script_install() {
 	echo "Installing/Updating script to /usr/local/bin"
 	sudo wget -O "/usr/local/bin/ctc" https://raw.githubusercontent.com/46620/Scripts/master/cutthecord/ctc.sh
+	sudo chown $USER:$USER /usr/local/bin/ctc
 	sudo chmod +x "/usr/local/bin/ctc"
 }
 
