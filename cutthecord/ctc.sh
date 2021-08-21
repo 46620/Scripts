@@ -7,36 +7,24 @@
 
 # This script is kind of a "master brain" script I wrote in order to make working on ctc easier.
 
-############################
-# Quick gross dump of vars #
-############################
-CTCTOP=/opt/cutthecord
-CTCTOOLS=$CTCTOP/tools
-CTCRESOURCES=$CTCTOP/cutthecord/resources
-CTCPATCHESPATH=$CTCRESOURCES/patches
-CTCPATCHES=(`ls -Ibranding -Ibettertm -Iblobs -Icustomfont -Icustomring $CTCPATCHESPATH`)
-CTCXMLPATCHESPATH=$CTCRESOURCES/xmlpatches
-CTCXMLPATCHES=(`ls $CTCXMLPATCHESPATH`)
-CTCBASE=$CTCTOP/com.discord
-CTCBLOBS=$CTCTOP/blobs
-
 # Print usage message.
 usage() {
     local program_name
     program_name=${0##*/}
     cat <<EOF
-Usage: $program_name [-option]
+Usage: $program_name [--option]
 Options:
     --help    Print this message
     --clone   Cleans and clones the CutTheCord repos
     --build   Builds CutTheCord from a given directory
-    --install Builds CutTheCord and Installs it to a connected device
+    --install Installs this script to your /usr/local/bin directory for easy running
     --setup   Sets up a directory in /opt and installs the last version of apktool
     --update  Updates the script to the latest
 EOF
 }
 
 cutthecord_clone() {
+	env_vars
 	clear
 	echo "Cloning repos, please wait."
 	sleep 2
@@ -64,6 +52,7 @@ cutthecord_build() {
 	echo "Currently the build script is being reworked for a new method of building."
 	exit
 	echo "Building CTC this will take a moment."
+	env_vars
 	sleep 2
 	# credit 5
 	if [ -d "$CTCTOP" ]
@@ -107,19 +96,24 @@ cutthecord_build() {
 	sleep 2
 	clear
 	echo "CutTheCord has been built. Please install it either by moving the apk to your phone or adb"
-	echo "The script can also auto install the script if you do --install instead of --build"
-}
-
-cutthecord_install() {
-	cutthecord_build
+	exit
+	#TODO: RUN INSTALLATION COMMAND HERE
 	read -p "Plug your device in and then press [Enter]"
 	echo "Installing to device"
 	adb install $CTCBASE/dist/com.cuttheccord.$CTCBRANCH-$ver.apk
 }
 
+cutthecord_install() {
+	echo "Installing script to /usr/local/bin"
+	sudo wget -O "/usr/local/bin/ctc" https://raw.githubusercontent.com/46620/Scripts/master/cutthecord/ctc.sh
+	sudo chmod +x "/usr/local/bin/ctc"
+
+}
+
 cutthecord_setup() {
 	clear
 	echo "Setting up cuttheccord environment"
+	env_vars
 	sleep 1
 	sudo mkdir -p $CTCTOP
 	sudo chown $USER:$USER $CTCTOP
@@ -174,6 +168,19 @@ keystore_setup() {
 	fi
 }
 
+env_vars(){
+	CTCTOP=/opt/cutthecord
+    CTCTOOLS=$CTCTOP/tools
+    CTCRESOURCES=$CTCTOP/cutthecord/resources
+    CTCPATCHESPATH=$CTCRESOURCES/patches
+    CTCPATCHES=(`ls -Ibranding -Ibettertm -Iblobs -Icustomfont -Icustomring $CTCPATCHESPATH`)
+    CTCXMLPATCHESPATH=$CTCRESOURCES/xmlpatches
+    CTCXMLPATCHES=(`ls $CTCXMLPATCHESPATH`)
+    CTCBASE=$CTCTOP/com.discord
+    CTCBLOBS=$CTCTOP/blobs
+}
+
+
 main() {
     
     case "$1" in
@@ -188,7 +195,7 @@ main() {
             cutthecord_build
             ;;
         --install)
-            cutthecord_install
+            
             ;;
         --setup)
             cutthecord_setup
