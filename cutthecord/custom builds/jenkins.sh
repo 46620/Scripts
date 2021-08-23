@@ -2,7 +2,10 @@
 
 # This is a rework of my old auto ctc script to support multiple builds
 # For some reason when I did this all in functions it decided to just be a fuck fest of race conditions
-# Branding, customversion, and eventually notrack and nonearby will be included in all builds by default
+# Branding and notrack will be included in all builds by default
+
+# Jenkins user selection
+
 echo $JOB_BASE_NAME
 user=`echo $JOB_BASE_NAME | cut -c 12-`
 echo $user
@@ -32,6 +35,8 @@ case "$user" in
         exit 1
 esac
 
+# Make small temp work dir and set vars
+
 mkdir tmp
 cd tmp
 CTCTOP="`pwd`"
@@ -40,9 +45,13 @@ CTCPATCHESPATH="$CTCTOP/cutthecord/resources/patches"
 CTCXMLPATCHESPATH="$CTCTOP/cutthecord/resources/xmlpatches"
 CTCBASE="$CTCTOP/com.discord"
 
+# Clone the shit
+
 git clone https://booba.tech/CutTheCord/cutthecord.git
 git clone --depth=1 https://booba.tech/CutTheCord/discord.git
 cp -r discord/com.discord .
+
+# Find out what emote set the user wants
 
 if [[ USE_BLOBS -eq 1 ]]
 then
@@ -55,6 +64,8 @@ then
     echo "Mutant is currently not supported."
 fi
 
+# Start patching
+
 cd "$CTCTOP/cutthecord/resources/"
 export ver=`cat patchport-state.json | jq -r .versioncode`
 cd patches/branding
@@ -65,16 +76,19 @@ for cum in ${CTCPATCHES[@]}
     do
     	patch -p1 < "$CTCPATCHESPATH/$cum/$ver.patch"
 done
-
+# New exotic xml patches
 for cum2 in ${XMLPATCHES[@]}
     do
     	xml-patch --patch "$CTCXMLPATCHESPATH/$cum2/$ver.xml" --srcdir "$CTCBASE"
 done
 
+# Required patches
 patch -p1 < "$CTCPATCHESPATH/branding/$ver-custom.patch"
 patch -p1 < "$CTCPATCHESPATH/notrack/$ver.patch"
 xml-patch --patch "$CTCXMLPATCHESPATH/notrack/$ver.xml" --srcdir "$CTCBASE"
 #bash "$CTCPATCHESPATH/notrack/$ver-post.sh" <-- This caused the app to not start
+
+# Now use said emotes you wanted
 
 if [[ USE_BLOBS -eq 1 ]]
 then
@@ -84,16 +98,22 @@ then
     echo "Mutant is currently not supported."
 fi
 
+# Custom res settings
+
 if [[ CUSTOM_RES -eq 1 ]]
 then
 cp -rv ../cutthecord/resources/res/$user/res .
 fi
+
+# Addon to custom res
 
 if [[ CUSTOM_ICON -eq 1 ]]
 then
     bash "$CTCPATCHESPATH/branding/customicon.sh"
     bash "$CTCPATCHESPATH/branding/customdynamicicon.sh"
 fi
+
+# Build this bitch
 
 apktool b
 jarsigner -keystore /home/mia/ctc.keystore -storepass $keystore_passwd dist/com.cutthecord.$CTCFORK-$ver.apk ctc
