@@ -49,10 +49,10 @@ echo "Unzipping SaveMii_Mod"
 unzip SaveMii_Mod.zip;rm SaveMii_Mod.zip
 
 echo "Downloading mocha config"
-wget -q -O "wiiu/apps/mocha/config.ini" "https://wiiu.hacks.guide/docs/files/config.ini"
+wget -qO "wiiu/apps/mocha/config.ini" "https://wiiu.hacks.guide/docs/files/config.ini"
 
 echo "Downloading the homebrew installer"
-wget -q -O "wiiu/payload.zip" "https://github.com/wiiu-env/homebrew_launcher_installer/releases/download/v1.4/payload.zip"
+wget -qO "wiiu/payload.zip" "https://github.com/wiiu-env/homebrew_launcher_installer/releases/download/v1.4/payload.zip"
 echo "Unzipping homebrew installer"
 cd wiiu;unzip payload.zip;rm payload.zip;cd ..
 
@@ -60,7 +60,7 @@ cd wiiu;unzip payload.zip;rm payload.zip;cd ..
 # Archive #
 ###########
 echo "Create zip archive"
-7z a -tzip "out/latest.zip" *
+7z a -tzip "out/latest.zip" * > /dev/null
 cd out
 md5sum "latest.zip" > "latest.zip.md5"
 

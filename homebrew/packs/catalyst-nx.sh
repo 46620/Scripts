@@ -7,15 +7,15 @@
 # Hekate & Atmosphere #
 #######################
 echo "Downloading Hekate"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/CTCaer/Hekate/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/CTCaer/Hekate/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qi -
 echo "Adding Hekate"
-unzip hekate*.zip
+unzip -q hekate*.zip
 rm hekate*.zip
 
 echo "Downloading Atmosphere"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.zip" | head -1 | wget -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.zip" | head -1 | wget -qi -
 echo "Adding Atmosphere"
-unzip atmosphere*.zip
+unzip -q atmosphere*.zip
 rm atmosphere*.zip
 
 ###############
@@ -23,15 +23,15 @@ rm atmosphere*.zip
 ###############
 echo "Downloading hosts file"
 mkdir -p atmosphere/hosts
-wget -O atmosphere/hosts/emummc.txt "https://nh-server.github.io/switch-guide/files/emummc.txt"
+wget -qO atmosphere/hosts/emummc.txt "https://nh-server.github.io/switch-guide/files/emummc.txt"
 
 echo "Downloading hekate files from meem" # Can be swapped out for guide files
-wget -O bootloader/hekate_ipl.ini "https://dl.46620.moe/script-deps/switch/catalyst/hekate_ipl.ini" # tmp point towards my server while I wait for nh to update
-wget -O bootloader/patches.ini "https://suchmememanyskill.github.io/guides/Img/patches.ini"
+wget -qO bootloader/hekate_ipl.ini "https://dl.46620.moe/script-deps/switch/catalyst/hekate_ipl.ini" # tmp point towards my server while I wait for nh to update
+wget -qO bootloader/patches.ini "https://suchmememanyskill.github.io/guides/Img/patches.ini"
 
 echo "Downloading boot logos" # Cause people need these for some fucking reason
-wget "https://nh-server.github.io/switch-guide/files/bootlogos.zip"
-unzip bootlogos.zip
+wget -q "https://nh-server.github.io/switch-guide/files/bootlogos.zip"
+unzip -q bootlogos.zip
 rm bootlogos.zip
 
 #################
@@ -39,45 +39,45 @@ rm bootlogos.zip
 #################
 
 echo "Adding nx-mtp"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/retronx-team/mtp-server-nx/releases/latest | jq -r '.assets[0].browser_download_url' | wget -O "switch/mtp-server-nx.nro" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/retronx-team/mtp-server-nx/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qO "switch/mtp-server-nx.nro" -i -
 
 echo "Adding hb_appstore"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/fortheusers/hb-appstore/releases/latest | jq -r '.assets[2].browser_download_url' | wget -i -
-unzip switch-extracttosd.zip;rm switch-extracttosd.zip
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/fortheusers/hb-appstore/releases/latest | jq -r '.assets[2].browser_download_url' | wget -qi -
+unzip -q switch-extracttosd.zip;rm switch-extracttosd.zip
 
 echo "Adding ftpd"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/mtheall/ftpd/releases/latest | jq -r '.assets[12].browser_download_url' | wget -O "switch/ftpd.nro" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/mtheall/ftpd/releases/latest | jq -r '.assets[12].browser_download_url' | wget -qO "switch/ftpd.nro" -i -
 
 echo "Adding Goldleaf"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/XorTroll/Goldleaf/releases | grep -wo "https.*eaf.nro" | head -1 | wget -O "switch/Goldleaf.nro" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/XorTroll/Goldleaf/releases | grep -wo "https.*eaf.nro" | head -1 | wget -qO "switch/Goldleaf.nro" -i -
 
 echo "Adding Checkpoint"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[2].browser_download_url' | wget -O "switch/Checkpoint.nro" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[2].browser_download_url' | wget -qO "switch/Checkpoint.nro" -i -
 
 echo "Adding NX-Shell"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/joel16/NX-Shell/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "switch/NX-Shell.nro" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/joel16/NX-Shell/releases/latest | jq -r '.assets[].browser_download_url' | wget -qO "switch/NX-Shell.nro" -i -
 
 echo "Adding NXThemeInstaller"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/exelix11/SwitchThemeInjector/releases/latest | jq -r '.assets[0].browser_download_url' | wget -O "switch/NXThemesInstaller.nro" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/exelix11/SwitchThemeInjector/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qO "switch/NXThemesInstaller.nro" -i -
 
 echo "Adding nxdumptool"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/DarkMatterCore/nxdumptool/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "switch/nxdumptool.nro" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/DarkMatterCore/nxdumptool/releases/latest | jq -r '.assets[].browser_download_url' | wget -qO "switch/nxdumptool.nro" -i -
 
 echo "Adding 90dns tester"
-wget -O switch/Switch_90DNS_tester.nro "https://github.com/meganukebmp/Switch_90DNS_tester/releases/download/v1.0.3/Switch_90DNS_tester.nro"
+wget -qO switch/Switch_90DNS_tester.nro "https://github.com/meganukebmp/Switch_90DNS_tester/releases/download/v1.0.3/Switch_90DNS_tester.nro"
 
 ################
 # Payload Shit #
 ################
 
 echo "Adding Lockpick_RCM" # This is the lockpicking lawyer
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/shchmue/Lockpick_RCM/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "bootloader/payloads/Lockpick_RCM.bin" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/shchmue/Lockpick_RCM/releases/latest | jq -r '.assets[].browser_download_url' | wget -qO "bootloader/payloads/Lockpick_RCM.bin" -i -
 
 echo "Adding TegraExplorer" 
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/suchmememanyskill/TegraExplorer/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "bootloader/payloads/TegraExplorer.bin" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/suchmememanyskill/TegraExplorer/releases/latest | jq -r '.assets[].browser_download_url' | wget -qO "bootloader/payloads/TegraExplorer.bin" -i -
 
 echo "Adding fusee payload"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.bin" | head -1 | wget -O "bootloader/payloads/fusee.bin" -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.bin" | head -1 | wget -q "bootloader/payloads/fusee.bin" -i -
 
 echo "Add Hekate to payloads"
 cp hekate*.bin bootloader/payloads/hekate.bin
@@ -96,7 +96,7 @@ mv hekate*.bin atmosphere/reboot_payload.bin
 # Archive #
 ###########
 echo "Create zip archive"
-7z a -tzip "out/latest.zip" *
+7z a -tzip "out/latest.zip" * > /dev/null
 cd out
 md5sum "latest.zip" > "latest.zip.md5"
 

@@ -12,41 +12,41 @@ export script_start=`pwd`
 # Luma #
 ########
 echo "Downloading Luma"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/LumaTeam/Luma3DS/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
-unzip Luma3DSv*.zip;rm Luma3DSv*.zip
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/LumaTeam/Luma3DS/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qi -
+unzip -q Luma3DSv*.zip;rm Luma3DSv*.zip
 
 #################
 # Homebrew apps #
 #################
 
 echo "Downloading FBI" # might swap this out for the fork ngl
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Steveice10/FBI/releases/latest | jq -r '.assets[].browser_download_url' | wget -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Steveice10/FBI/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 rm -rf FBI.zip
 
 echo "Downloading Anemone"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/astronautlevel2/Anemone3DS/releases/latest | jq -r '.assets[1].browser_download_url' | wget -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/astronautlevel2/Anemone3DS/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
 echo "Downloading ftpd"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/mtheall/ftpd/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/mtheall/ftpd/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qi -
 
 echo "Downloading Checkpoint"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[1].browser_download_url' | wget -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
 echo "Downloading Universal Updater"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Universal-Team/Universal-Updater/releases/latest | jq -r '.assets[1].browser_download_url' | wget -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Universal-Team/Universal-Updater/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
 echo "Downloading Homebrew Launcher Wrapper" # is this just a blank cia to use as a forwarder?
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/mariohackandglitch/homebrew_launcher_dummy/releases/latest | jq -r '.assets[].browser_download_url' | wget -i -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/mariohackandglitch/homebrew_launcher_dummy/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 
 echo "Downloading GodMode9"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -i -
-mkdir tmp;mv GodMode9*.zip tmp;cd tmp/;unzip *.zip;mv GodMode9.firm ../luma/payloads;cd ..;rm -rf tmp
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
+mkdir tmp;mv GodMode9*.zip tmp;cd tmp/;unzip -q *.zip;mv GodMode9.firm ../luma/payloads;cd ..;rm -rf tmp
 
 echo "Downloading DSP1"
-wget "https://github.com/zoogie/DSP1/releases/download/v1.0/DSP1.cia" # Not updated since 2017 so not gonna do an API call
+wget -q "https://github.com/zoogie/DSP1/releases/download/v1.0/DSP1.cia" # Not updated since 2017 so not gonna do an API call
 
 echo "Downloading crt-no-timeoffset" # Not updated since 2019 so not gonna do an API call
-wget "https://github.com/ihaveamac/ctr-no-timeoffset/releases/download/v1.1/ctr-no-timeoffset.3dsx"
+wget -q "https://github.com/ihaveamac/ctr-no-timeoffset/releases/download/v1.1/ctr-no-timeoffset.3dsx"
 
 ################
 # Moving shit  #
@@ -61,7 +61,7 @@ mv 3ds/boot.3dsx $script_start
 # First Archive #
 #################
 echo "Making cleanSD zip archive"
-7z a -tzip "out/latest-cleanSD.zip" *
+7z a -tzip "out/latest-cleanSD.zip" * > /dev/null
 cd out
 md5sum "latest-cleanSD.zip" > "latest-cleanSD.zip.md5"
 cd ..
@@ -70,21 +70,20 @@ cd ..
 # browserhax #
 ##############
 echo "Downloading browserhax files"
-wget -O "arm11code.bin" "https://github.com/TuxSH/universal-otherapp/releases/download/v1.3.0/otherapp.bin" # I do not think this is gonna get many updates, if it starts updating a lot I'll use the api
-wget -O "boot9strap.zip" "https://github.com/SciresM/boot9strap/releases/download/1.3/boot9strap-1.3.zip" # Has not been updated since 2017, should be no reason to call the api
-wget -O "SafeB9SInstaller.zip" "https://github.com/d0k3/SafeB9SInstaller/releases/download/v0.0.7/SafeB9SInstaller-20170605-122940.zip" # Same reason as above
-unzip boot9strap.zip
+wget -qO "arm11code.bin" "https://github.com/TuxSH/universal-otherapp/releases/download/v1.3.0/otherapp.bin" # I do not think this is gonna get many updates, if it starts updating a lot I'll use the api
+wget -qO "boot9strap.zip" "https://github.com/SciresM/boot9strap/releases/download/1.3/boot9strap-1.3.zip" # Has not been updated since 2017, should be no reason to call the api
+wget -qO "SafeB9SInstaller.zip" "https://github.com/d0k3/SafeB9SInstaller/releases/download/v0.0.7/SafeB9SInstaller-20170605-122940.zip" # Same reason as above
+unzip -q boot9strap.zip
 rm boot9strap.zip
 mkdir boot9strap
 mv boot9strap.fir* boot9strap
-mkdir tmp;mv SafeB9SInstaller.zip tmp;cd tmp;unzip SafeB9SInstaller.zip; mv SafeB9SInstaller.bin ..;cd ..;rm -rf tmp
-rm *.zip
+mkdir tmp;mv SafeB9SInstaller.zip tmp;cd tmp;unzip -q SafeB9SInstaller.zip; mv SafeB9SInstaller.bin ..;cd ..;rm -rf tmp
 
 ######################
 # browserhax archive #
 ######################
 echo "Making browserhax archive"
-7z a -tzip "out/latest-browserhax.zip" * -x\!out
+7z a -tzip "out/latest-browserhax.zip" * -x\!out > /dev/null
 cd out
 md5sum "latest-browserhax.zip" > "latest-browserhax.zip.md5"
 cd ..
