@@ -61,6 +61,9 @@ mv 3ds/boot.3dsx $script_start
 #################
 echo "Making cleanSD zip archive"
 7z a -tzip "out/latest-cleanSD.zip" *
+cd out
+md5sum "latest-cleanSD.zip" > "latest-cleanSD.zip.md5"
+cd ..
 
 ##############
 # browserhax #
@@ -81,6 +84,9 @@ rm *.zip
 ######################
 echo "Making browserhax archive"
 7z a -tzip "out/latest-browserhax.zip" * -x\!out
+cd out
+md5sum "latest-browserhax.zip" > "latest-browserhax.zip.md5"
+cd ..
 
 ###########
 # Credits #

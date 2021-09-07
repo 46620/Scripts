@@ -65,6 +65,8 @@ wget -O "vita/tai/PSVshell.skprx" "https://github.com/Electry/PSVshell/releases/
 # Make the archives #
 #####################
 7z a -tzip "out/latest.zip" *
+cd out
+md5sum "latest.zip" > "latest.zip.md5"
 
 ###########
 # Credits #
