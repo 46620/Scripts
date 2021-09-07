@@ -4,6 +4,8 @@
 # For some reason when I did this all in functions it decided to just be a fuck fest of race conditions
 # Branding and notrack will be included in all builds by default
 
+# notrack is no longer included by default as it is possibly linked to accounts being temp locked
+
 # Jenkins user selection
 
 echo $JOB_BASE_NAME
@@ -84,8 +86,8 @@ done
 
 # Required patches
 patch -p1 < "$CTCPATCHESPATH/branding/$ver-custom.patch"
-patch -p1 < "$CTCPATCHESPATH/notrack/$ver.patch"
-xml-patch --patch "$CTCXMLPATCHESPATH/notrack/$ver.xml" --srcdir "$CTCBASE"
+#patch -p1 < "$CTCPATCHESPATH/notrack/$ver.patch"
+#xml-patch --patch "$CTCXMLPATCHESPATH/notrack/$ver.xml" --srcdir "$CTCBASE"
 #bash "$CTCPATCHESPATH/notrack/$ver-post.sh" <-- This caused the app to not start
 
 # Now use said emotes you wanted
