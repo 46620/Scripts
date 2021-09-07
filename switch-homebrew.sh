@@ -96,6 +96,8 @@ mv hekate*.bin atmosphere/reboot_payload.bin
 ###########
 echo "Create zip archive"
 7z a -tzip "out/latest.zip" *
+cd out
+md5sum "latest.zip" > "latest.zip.md5"
 
 ###########
 # Credits #
