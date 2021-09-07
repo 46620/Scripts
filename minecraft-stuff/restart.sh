@@ -1,14 +1,17 @@
 #!/bin/bash
 
+# I do not use this script anymore as I swapped to using a docker container, this script is now a template
+
 ########################
 # Paper Restart Script #
 ########################
 cd /opt/Minecraft # this script will assume that this is the path the server is in, please update if it is elsewhere
 
 # Pull latest paper release
-paperbase=https://papermc.io/api/v2/projects/paper/versions/1.17.1
-paperlatestbuild=` curl -sL $paperbase | jq .builds[-1]`
-wget -O server.jar "$paperbase/builds/$paperlatestbuild/downloads/paper-1.17.1-$paperlatestbuild.jar"
+paperbase=https://papermc.io/api/v2/projects/paper
+paperlatestupdate=`curl -sL $paperbase | jq -r .versions[-1]`
+paperlatestbuild=`curl -sL $paperbase/versions/$paperlatestupdate | jq .builds[-1]`
+wget -O server.jar "$paperbase/versions/$paperlatestupdate/builds/$paperlatestbuild/downloads/paper-$paperlatestupdate-$paperlatestbuild.jar"
 
 # Update Protocollib to latest 
 echo "Updating ProtocolLib.jar"
