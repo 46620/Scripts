@@ -7,11 +7,12 @@
 #######################
 echo "Downloading Hekate"
 curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/CTCaer/Hekate/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
+echo "Adding Hekate"
 unzip hekate*.zip
 rm hekate*.zip
 
 echo "Downloading Atmosphere"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases/latest | jq -r '.assets[0].browser_download_url' | wget -i -
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.zip" | head -1 | wget -i -
 echo "Adding Atmosphere"
 unzip atmosphere*.zip
 rm atmosphere*.zip
@@ -24,7 +25,7 @@ mkdir -p atmosphere/hosts
 wget -O atmosphere/hosts/emummc.txt "https://nh-server.github.io/switch-guide/files/emummc.txt"
 
 echo "Downloading hekate files from meem" # Can be swapped out for guide files
-wget -O bootloader/hekate_ipl.ini "https://suchmememanyskill.github.io/guides/Img/hekate_ipl.ini"
+wget -O bootloader/hekate_ipl.ini "https://dl.46620.moe/script-deps/switch/catalyst/hekate_ipl.ini" # tmp point towards my server while I wait for nh to update
 wget -O bootloader/patches.ini "https://suchmememanyskill.github.io/guides/Img/patches.ini"
 
 echo "Downloading boot logos" # Cause people need these for some fucking reason
@@ -74,8 +75,8 @@ curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/shchmue
 echo "Adding TegraExplorer" 
 curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/suchmememanyskill/TegraExplorer/releases/latest | jq -r '.assets[].browser_download_url' | wget -O "bootloader/payloads/TegraExplorer.bin" -i -
 
-echo "Adding fusee-primary payload"
-curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases/latest | jq -r '.assets[2].browser_download_url' | wget -O "bootloader/payloads/fusee-primary.bin" -i -
+echo "Adding fusee payload"
+curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.bin" | head -1 | wget -O "bootloader/payloads/fusee.bin" -i -
 
 echo "Add Hekate to payloads"
 cp hekate*.bin bootloader/payloads/hekate.bin
@@ -86,7 +87,9 @@ mv hekate*.bin atmosphere/reboot_payload.bin
 #############
 # Frii logo #
 #############
-wget -O bootloader/bootlogo.bmp "https://46620.moe/bootlogo.bmp"
+# echo Adding bootlogo
+# update 2021-09-06, ams 1.0 made this section not needed and as I am currently fixing this script before nh says anything, I am removing this until notified
+#wget -O bootloader/bootlogo.bmp "https://46620.moe/bootlogo.bmp"
 
 ###########
 # Archive #
@@ -104,4 +107,5 @@ echo "Create zip archive"
 # Windows 10 for being shit and somehow causing my internet to constantly go down: https://www.microsoft.com/en-us/
 # My computer for constantly BSoD'ing cause I have some memory issues while I try to not make this script bad
 # My brain for figuring out "Oh hey lemme set the path in the actual one liner"
+# ams for updating to 1.0 finally and making me rework some of my script.
 # My boyfriend for letting me use him as a pillow a few times a week to keep me alive
