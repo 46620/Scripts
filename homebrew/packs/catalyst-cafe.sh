@@ -16,37 +16,37 @@
 echo "Downloading WUP Installer GX2"
 wget -q "https://wiiubru.com/appstore/zips/wup_installer_gx2.zip"
 echo "Unzipping WUP"
-unzip wup_installer_gx2.zip;rm wup_installer_gx2.zip info.json manifest.install screen1.png
+unzip -q wup_installer_gx2.zip;rm wup_installer_gx2.zip info.json manifest.install screen1.png
 
 echo "Downloading NANDdumper"
 wget -q "https://www.wiiubru.com/appstore/zips/nanddumper.zip"
 echo "Unzipping NANDdumper"
-unzip nanddumper.zip;rm nanddumper.zip info.json manifest.install screen1.png
+unzip -q nanddumper.zip;rm nanddumper.zip info.json manifest.install screen1.png
 
 echo "Downloading hbappstore"
 wget -q "https://github.com/fortheusers/hb-appstore/releases/download/2.2/wiiu-extracttosd.zip"
 echo "Unzipping hbappstore"
-unzip wiiu-extracttosd.zip;rm wiiu-extracttosd.zip
+unzip -q wiiu-extracttosd.zip;rm wiiu-extracttosd.zip
 
 echo "Downloading hb launcher"
 wget -q "https://github.com/dimok789/homebrew_launcher/releases/download/1.4/homebrew_launcher.v1.4.zip"
 echo "Unzipping hb launcher"
-unzip homebrew_launcher.v1.4.zip;rm homebrew_launcher.v1.4.zip
+unzip -q homebrew_launcher.v1.4.zip;rm homebrew_launcher.v1.4.zip
 
 echo "Downloading Mocha"
 wget -q "https://www.wiiubru.com/appstore/zips/mocha.zip"
 echo "Unzipping Mocha"
-unzip mocha.zip;rm mocha.zip info.json manifest.install
+unzip -q mocha.zip;rm mocha.zip info.json manifest.install
 
 echo "Downloading indexiine installer"
 wget -q "https://github.com/GaryOderNichts/indexiine-installer/releases/download/v2/indexiine-installer.zip"
 echo "Unzipping indexiine installer"
-unzip indexiine-installer.zip;rm indexiine-installer.zip
+unzip -q indexiine-installer.zip;rm indexiine-installer.zip
 
 echo "Downloading SaveMii_Mod"
 wget -q "https://wiiu.hacks.guide/docs/files/SaveMii_Mod.zip"
 echo "Unzipping SaveMii_Mod"
-unzip SaveMii_Mod.zip;rm SaveMii_Mod.zip
+unzip -q SaveMii_Mod.zip;rm SaveMii_Mod.zip
 
 echo "Downloading mocha config"
 wget -qO "wiiu/apps/mocha/config.ini" "https://wiiu.hacks.guide/docs/files/config.ini"
@@ -54,7 +54,7 @@ wget -qO "wiiu/apps/mocha/config.ini" "https://wiiu.hacks.guide/docs/files/confi
 echo "Downloading the homebrew installer"
 wget -qO "wiiu/payload.zip" "https://github.com/wiiu-env/homebrew_launcher_installer/releases/download/v1.4/payload.zip"
 echo "Unzipping homebrew installer"
-cd wiiu;unzip payload.zip;rm payload.zip;cd ..
+cd wiiu;unzip -q payload.zip;rm payload.zip;cd ..
 
 ###########
 # Archive #
