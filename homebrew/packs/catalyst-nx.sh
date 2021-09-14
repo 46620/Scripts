@@ -89,8 +89,7 @@ mv hekate*.bin atmosphere/reboot_payload.bin
 # Frii logo #
 #############
 # echo Adding bootlogo
-# update 2021-09-06, ams 1.0 made this section not needed and as I am currently fixing this script before nh says anything, I am removing this until notified
-#wget -O bootloader/bootlogo.bmp "https://46620.moe/bootlogo.bmp"
+wget -O bootloader/bootlogo.bmp "https://46620.moe/bootlogo.bmp"
 
 ###########
 # Archive #
