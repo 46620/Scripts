@@ -5,7 +5,7 @@
 # Branding and notrack will be included in all builds by default
 
 # notrack is no longer included by default as it is possibly linked to accounts being temp locked
-# disable-mobileindicator was also removed as a test to find what is causing the app to be detected
+#
 
 # Jenkins user selection
 
@@ -14,7 +14,7 @@ user=`echo $JOB_BASE_NAME | cut -c 12-`
 echo $user
 case "$user" in
     46620)
-        CTCPATCHES=(betterdmheader customversion profilemention)
+        CTCPATCHES=(betterdmheader customversion disable-mobileindicator profilemention)
         XMLPATCHES=(betterdmheader noblocked squareavatars)
         USE_BLOBS=1
         USE_MUTANT=0
@@ -82,7 +82,7 @@ done
 # New exotic xml patches
 for cum2 in ${XMLPATCHES[@]}
     do
-    	xml-patch --patch "$CTCXMLPATCHESPATH/$cum2/$ver.xml" --srcdir "$CTCBASE"
+    	xml-patch --patch "$CTCXMLPATCHESPATH/$cum2/$cum2.xml" --srcdir "$CTCBASE"
 done
 
 # Required patches
