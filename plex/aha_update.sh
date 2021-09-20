@@ -1,9 +1,14 @@
 #!/bin/bash
 
-# run with sudo, tested on ubuntu
+# Use with docker container, pms config path /opt/plexmediaserver/config
 
 echo STOPPING PLEX
 docker stop Plex
+
+echo UPDATING anilist
+cd '/opt/plexmediaserver/config/Library/Application Support/Plex Media Server/Plug-ins/anilist.bundle'
+git reset --hard && git pull
+chmod 775 -R '/opt/plexmediaserver/config/Library/Application Support/Plex Media Server/Plug-ins/anilist.bundle'
 
 echo UPDATING HAMA
 cd '/opt/plexmediaserver/config/Library/Application Support/Plex Media Server/Plug-ins/Hama.bundle'
