@@ -82,7 +82,7 @@ done
 # New exotic xml patches
 for cum2 in ${XMLPATCHES[@]}
     do
-    	xml-patch --patch "$CTCXMLPATCHESPATH/$cum2/$cum2.xml" --srcdir "$CTCBASE"
+    	xml-patch --patch "$CTCXMLPATCHESPATH/$cum2/$ver.xml" --srcdir "$CTCBASE"
 done
 
 # Required patches
