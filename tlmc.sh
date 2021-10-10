@@ -12,7 +12,7 @@ Options:
     --download       Downloads the tlmc collection
     --tta-flac       Convert all tta files to flac and exit
     --album-art      Adds album art to split flacs (not implemented)
-    --flac-cue       Splits flac files based on cue sheet and renames split files (not implemented)
+    --flac-cue       Splits flac files based on cue sheet and renames split files (not fully tested)
     --setup          Installs all the tools that will be required (only supports ubuntu and arch currently)
     --run            Do literally everything (not implemented)
     --update         Updates the script to the latest
@@ -46,6 +46,8 @@ tlmc_convert() {
 
 tlmc_art() {
     echo "This option is not implemented. This will be added in a later commit."
+    exit 0
+    
 }
 
 tlmc_split(){
@@ -60,8 +62,9 @@ tlmc_split(){
         shnsplit -f "$name".cue -o flac -t "%n. %t" "$name".tta.flac
         mv *.flac "$(dirname "$name")"
     done
-    echo "Deleting all the unsplit files"
+    echo "Deleting all unnecessary files."
     find . -iname "*.tta.flac" -exec rm -f \{\} \;
+    find . -iname "*.cue" -exec rm -f \{\} \;
 }
 
 tlmc_setup() {
@@ -69,8 +72,8 @@ tlmc_setup() {
     find_linux(){
 	    linux=`cat /etc/os-release | grep ID_LIKE= | cut -b 9-`
 	    case $linux in
-		    [arch]) sudo pacman -S shntool cuetools aria2;;
-            [debain]) sudo apt install -y shntool cuetools aria2;;
+		    [arch]) sudo pacman -S shntool cuetools flac aria2;;
+            [debain]) sudo apt install -y shntool cuetools flac aria2;;
             [*]) echo "Your current setup is not supported by this script. If you want your system supported, please make a PR.";;
         esac
     }
