@@ -9,8 +9,8 @@ usage() {
 Usage: $program_name [--option]
 Options:
     --help           Print this message
-    --download       Downloads the tlmc collection (Currently does not work)
-    --tta-flac       Convert all tta files to flac and exit (Currently being worked on)
+    --download       Downloads the tlmc collection
+    --tta-flac       Convert all tta files to flac and exit
     --album-art      Adds album art to split flacs (not implemented)
     --flac-cue       Splits flac files based on cue sheet and renames split files (not implemented)
     --setup          Installs all the tools that will be required (only supports ubuntu and arch currently)
@@ -26,7 +26,15 @@ EOF
 }
 
 tlmc_download() {
-    echo "This option is not implemented. This will be added in a later commit."
+    if ! [ -x "$(command -v aria2c)" ]
+    then
+        echo "Aria2c not found. Please run --setup and then rerun this"
+    else
+        echo "Downloading torrent file"
+        wget "https://cdn.discordapp.com/attachments/337095801820020746/892792704298262528/Touhou_lossless_music_collection_v.19.torrent"
+        echo "Downloading the collection using Aria2c (This will take at minimum 5 hours)"
+        aria2c --seed-time=0 Touhou_lossless_music_collection_v.19.torrent
+    fi
 }
 
 tlmc_convert() {
@@ -61,8 +69,9 @@ tlmc_setup() {
     find_linux(){
 	    linux=`cat /etc/os-release | grep ID_LIKE= | cut -b 9-`
 	    case $linux in
-		    [arch]) sudo pacman -S shntool cuetools;;
-            [debain]) sudo apt install -y shntool cuetools;;
+		    [arch]) sudo pacman -S shntool cuetools aria2;;
+            [debain]) sudo apt install -y shntool cuetools aria2;;
+            [*]) echo "Your current setup is not supported by this script. If you want your system supported, please make a PR.";;
         esac
     }
 }
