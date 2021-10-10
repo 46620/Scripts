@@ -50,6 +50,8 @@ tlmc_split(){
     for name in "${files[@]}"
     do
         shnsplit -f "$name".cue -o flac -t "%n. %t" "$name".tta.flac
+        cp "*.flac" "$(dirname "${files[@]}")" # fails if set to @ but works if set to a specific array item
+        rm *.flac # does work
     done
     echo "Deleting all the unsplit files"
     find . -iname "*.tta.flac" -exec rm -f \{\} \;
