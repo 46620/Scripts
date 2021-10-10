@@ -14,7 +14,6 @@ Options:
     --album-art      Adds album art to split flacs (not implemented)
     --flac-cue       Splits flac files based on cue sheet and renames split files (not fully tested)
     --setup          Installs all the tools that will be required (only supports ubuntu and arch currently)
-    --run            Do literally everything (not implemented)
     --update         Updates the script to the latest
 
 Info: This script should be ran with a directory looking like this in order to work properly. (this does not apply to --download)
@@ -111,9 +110,6 @@ main() {
             ;;
         --setup)
             tlmc_setup
-            ;;
-        --run)
-            tlmc_all
             ;;
         --update)
             tlmc_update
