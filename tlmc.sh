@@ -50,7 +50,7 @@ tlmc_art() {
 }
 
 tlmc_split(){
-    echo "Splitting files, this can take around 34 hours." # I ran this across the entire folder and some things errored and didn't give anything due to illegal characters like slashes. I do not currently have a way other than manually fixing them yourself.
+    echo "Splitting files, this can take around 34 hours." # I ran this across the entire folder and 105 things errored and didn't give anything due to illegal characters like slashes. I do not currently have a way other than manually fixing them yourself.
     files=()
     while IFS=  read -r -d $'\0'; do
         files+=("$REPLY")
@@ -64,6 +64,8 @@ tlmc_split(){
         rm $name.cue
         rm $name.tta.flac
     done
+    echo "If you want to see a possible known list of missing files, click the link below. In a future commit it will be changed to a torrent link with the proper files in it."
+    echo "https://cdn.discordapp.com/attachments/892270927314841640/897511251809275964/missing.txt"
 }
 
 tlmc_setup() {
