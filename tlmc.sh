@@ -50,20 +50,20 @@ tlmc_art() {
 }
 
 tlmc_split(){
-    echo "Splitting files, this can take a fuckton of time." # I have not tested this across the entire tlmc folder as I am not ready for that level commitment yet
+    echo "Splitting files, this can take around 34 hours." # I ran this across the entire folder and some things errored and didn't give anything due to illegal characters like slashes. I do not currently have a way other than manually fixing them yourself.
     files=()
     while IFS=  read -r -d $'\0'; do
         files+=("$REPLY")
-    done < <(find . -iname "*.tta.flac" -print0 | cut -b 3- | sed 's/.tta.flac//g') # the 9 should be a 4 but because of my dumbass way of converting files kept the old file extension in it
+    done < <(find . -iname "*.tta.flac" -print0 | cut -b 3- | sed 's/.tta.flac//g')
 
     for name in "${files[@]}"
     do
         shnsplit -f "$name".cue -o flac -t "%n. %t" "$name".tta.flac
         mv *.flac "$(dirname "$name")"
+        echo "Deleting the original tta and cue sheet"
+        rm $name.cue
+        rm $name.tta.flac
     done
-    echo "Deleting all unnecessary files."
-    find . -iname "*.tta.flac" -exec rm -f \{\} \;
-    find . -iname "*.cue" -exec rm -f \{\} \;
 }
 
 tlmc_setup() {
@@ -126,6 +126,6 @@ main "$@"
 # Credits
 #
 # 1. Azuracast for being a really good self hosted radio software
-# 2. TLMC for their amazing archive of Touhou music
+# 2. TLMC for their amazing archive of Touhou doujin music
 # 3. rwx for maintaining tlmc
 # 4. SlvrEagle23 for being the best dev and seeing my tweet even though I didn't mean for him to (https://twitter.com/SlvrEagle23/status/1442926858924822528)
