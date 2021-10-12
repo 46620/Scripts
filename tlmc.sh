@@ -9,7 +9,7 @@ usage() {
 Usage: $program_name [--option]
 Options:
     --help           Print this message
-    --download       Downloads the tlmc collection
+    --download       Downloads the tlmc collection (Currently v19)
     --tta-flac       Convert all tta files to flac and exit
     --album-art      Adds album art to split flacs (not implemented)
     --flac-cue       Splits flac files based on cue sheet and renames split files (not fully tested)
