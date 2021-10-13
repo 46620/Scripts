@@ -46,7 +46,18 @@ tlmc_convert() {
 tlmc_art() {
     echo "This option is not implemented. This will be added in a later commit."
     exit 0
-    
+    if ! [ -x "$(command -v aria2c)" ]
+    then
+        echo "Aria2c not found. Please run --setup and then rerun this"
+    else
+        echo "Downloading scans to pull album art from"
+        wget -q "https://cdn.discordapp.com/attachments/337095801820020746/897738282601967626/Touhou_album_image_collection_v.19.torrent"
+        aria2c --seed-time=0 Touhou_album_image_collection_v.19.torrent
+        # TODO: make sure shit is in the right spot
+        #       make sure all images can be split the same
+        #       write the split function
+        #       debate to either embed the image into all tracks or leave a "cover.jpg" for all music players to use
+    fi
 }
 
 tlmc_split(){
