@@ -119,4 +119,9 @@ fi
 # Build this bitch
 
 apktool b
-jarsigner -keystore /usr/local/tmp/ctc.keystore -storepass $keystore_passwd dist/com.cutthecord.$CTCFORK-$ver.apk ctc
+# update: 2021-11-08 I now have to sign apks a different way and I have to realign the shit to work
+echo "Hi Jenkins output log"
+cd dist
+zipalign -f -p 4 com.cutthecord.$CTCFORK-$ver.apk tmp.apk
+mv tmp.apk com.cutthecord.$CTCFORK-$ver.apk
+apksigner sign --ks /usr/local/tmp/ctc.keystore --ks-pass pass:$keystore_passwd com.cutthecord.$CTCFORK-$ver.apk
