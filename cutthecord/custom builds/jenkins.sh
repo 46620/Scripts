@@ -119,4 +119,4 @@ fi
 # Build this bitch
 
 apktool b
-jarsigner -keystore /home/mia/ctc.keystore -storepass $keystore_passwd dist/com.cutthecord.$CTCFORK-$ver.apk ctc
+jarsigner -keystore /usr/local/tmp/ctc.keystore -storepass $keystore_passwd dist/com.cutthecord.$CTCFORK-$ver.apk ctc
