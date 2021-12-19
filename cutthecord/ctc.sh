@@ -16,7 +16,7 @@ Usage: $program_name [--option]
 Options:
     --help    Print this message
     --clone   Cleans and clones the CutTheCord repos
-    --install Installs this script to your /usr/local/bin directory for easy running
+    --install Installs this script to your local bin directory for easy running
     --setup   Sets up a directory in /opt and installs some basic jar files
     --update  Updates the script to the latest
 
@@ -50,10 +50,16 @@ cutthecord_clone() {
 }
 
 script_install() {
-	echo "Installing/Updating script to /usr/local/bin"
-	sudo wget -O "/usr/local/bin/ctc" https://raw.githubusercontent.com/46620/Scripts/master/cutthecord/ctc.sh
-	sudo chown $USER:$USER /usr/local/bin/ctc
-	sudo chmod +x "/usr/local/bin/ctc"
+    if [[ -d $HOME/.local/bin ]]
+    then
+        echo "Installing/Updating ctc"
+	    wget -O "$HOME/.local/bin/ctc" https://raw.githubusercontent.com/46620/Scripts/master/cutthecord/ctc.sh
+	    chmod +x "$HOME/.local/bin/ctc"
+        echo "Script installed, please make sure that $HOME/.local/bin is in your PATH before using this."
+    else
+        mkdir $HOME/.local/bin
+        script_install
+    fi
 }
 
 cutthecord_setup() {
