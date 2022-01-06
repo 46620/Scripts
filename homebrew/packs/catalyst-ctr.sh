@@ -18,17 +18,17 @@ curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/LumaTe
 # Homebrew apps #
 #################
 echo "Downloading FBI" # might swap this out for the fork ngl
-curl -sLq https://api.github.com/repos/Steveice10/FBI/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Steveice10/FBI/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 rm -rf FBI.zip
 
 echo "Downloading Anemone"
-curl -sLq https://api.github.com/repos/astronautlevel2/Anemone3DS/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/astronautlevel2/Anemone3DS/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
 echo "Downloading Universal Updater"
-curl -sLq https://api.github.com/repos/Universal-Team/Universal-Updater/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Universal-Team/Universal-Updater/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
 echo "Downloading GodMode9"
-curl -sLq https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 
 echo "Downloading DSP1"
 wget -q "https://github.com/zoogie/DSP1/releases/download/v1.0/DSP1.cia" # Not updated since 2017 so not gonna do an API call
