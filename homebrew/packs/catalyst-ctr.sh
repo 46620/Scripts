@@ -58,6 +58,7 @@ echo "Creating directories for each catalyst"
 mkdir -p {soundhax/3ds,soundhax/cias,soundhax/boot9strap,soundhax/luma/payloads} # saves me the slightest bit of time later
 mkdir -p {usm/3ds,usm/cias,usm/luma/payloads}
 mkdir -p {pichaxx/3ds,pichaxx/cias,pichaxx/boot9strap,pichaxx/luma/payloads}
+mkdir -p {ntrboot/3ds,ntrboot/cias,ntrboot/boot9strap,ntrboot/luma/payloads}
 
 echo "Creating output dir"
 mkdir out
@@ -103,7 +104,7 @@ mv otherapp.bin pichaxx
 cp boot.firm pichaxx/boot.firm
 cp GodMode9.firm pichaxx/luma/payloads
 cp -r gm9 pichaxx/gm9
-mv boot9strap.* pichaxx/boot9strap
+cp boot9strap.* pichaxx/boot9strap
 mv SafeB9SInstaller.bin pichaxx
 cd pichaxx
 zip -r pichaxx.zip * 
@@ -115,17 +116,38 @@ rm -rf pichaxx
 # unsafe mode is actually safe #
 ################################
 echo "Putting USM related files in correct locations"
-mv *.cia usm/cias
-mv *.3dsx usm/3ds
+cp *.cia usm/cias
+cp *.3dsx usm/3ds
 mv usm/3ds/boot.3dsx usm/boot.3dsx
-mv boot.firm usm/boot.firm
-mv GodMode9.firm usm/luma/payloads
-mv gm9 usm/gm9
+cp boot.firm usm/boot.firm
+cp GodMode9.firm usm/luma/payloads
+cp -r gm9 usm/gm9
 cd usm
 zip -r usm.zip * 
 mv usm.zip ../out
 cd ..
 rm -rf usm
+
+##################################
+# pay 20USD for CFW with ntrboot #
+##################################
+echo "Putting ntrboot related files in correct locations"
+mv *.cia ntrboot/cias
+mv *.3dsx ntrboot/3ds
+mv ntrboot/3ds/boot.3dsx ntrboot/boot.3dsx
+mv boot.firm ntrboot/luma/boot.firm
+mv GodMode9.firm ntrboot/luma/payloads
+mv boot9strap.* ntrboot/boot9strap
+mv gm9 ntrboot/gm9
+mv SafeB9SInstaller.firm ntrboot/boot.firm
+echo "!!! boot.firm is the SafeB9Sinstaller. Once you have used it to install b9s successfully, you should delete it, and move boot.firm from the /luma folder onto the root folder. 
+
+Your device will only boot to SafeB9Sinstaller until you do this. !!!" > ntrboot/readme.txt
+cd ntrboot
+zip -r ntrboot.zip * 
+mv ntrboot.zip ../out
+cd ..
+rm -rf ntrboot
 
 ###########
 # md5sums #
