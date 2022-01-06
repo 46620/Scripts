@@ -18,23 +18,17 @@ curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/LumaTe
 # Homebrew apps #
 #################
 echo "Downloading FBI" # might swap this out for the fork ngl
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Steveice10/FBI/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
+curl -sLq https://api.github.com/repos/Steveice10/FBI/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 rm -rf FBI.zip
 
 echo "Downloading Anemone"
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/astronautlevel2/Anemone3DS/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
-
-echo "Downloading Checkpoint"
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
+curl -sLq https://api.github.com/repos/astronautlevel2/Anemone3DS/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
 echo "Downloading Universal Updater"
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Universal-Team/Universal-Updater/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
-
-echo "Downloading Homebrew Launcher Wrapper" # is this just a blank cia to use as a forwarder?
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/mariohackandglitch/homebrew_launcher_dummy/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
+curl -sLq https://api.github.com/repos/Universal-Team/Universal-Updater/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
 echo "Downloading GodMode9"
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
+curl -sLq https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 
 echo "Downloading DSP1"
 wget -q "https://github.com/zoogie/DSP1/releases/download/v1.0/DSP1.cia" # Not updated since 2017 so not gonna do an API call
@@ -51,18 +45,18 @@ wget -q "https://github.com/SciresM/boot9strap/releases/download/1.3/boot9strap-
 echo "Downloading SafeB9SInstaller"
 wget -q "https://github.com/d0k3/SafeB9SInstaller/releases/download/v0.0.7/SafeB9SInstaller-20170605-122940.zip" # Same reason as above
 
-echo "Downloading frogminer_save"
-wget -q "https://github.com/zoogie/Frogminer/releases/download/v1.0/Frogminer_save.zip" # same reason as above
+echo "Downloading Homebrew Launcher Wrapper" # is this just a blank cia to use as a forwarder?
+wget -q "https://github.com/PabloMK7/homebrew_launcher_dummy/releases/download/v1.0/Homebrew_Launcher.cia" # Same reason as above
 
-echo "Downloading b9sTool"
-wget -q "https://github.com/zoogie/b9sTool/releases/download/v6.0.1/release_6.0.1.zip" # same reason as above
+echo "Downloading Checkpoint"
+wget -q "https://github.com/FlagBrew/Checkpoint/releases/download/v3.7.4/Checkpoint.cia" # Using older release for now as newer one broke:tm:
 
 #####################
 # make some folders #
 #####################
 echo "Creating directories for each catalyst"
-mkdir -p {soundhax/3ds,soundhax/cias,soundhax/boot9strap,soundhax/luma/payloads}
-mkdir -p {fredtool/3ds,fredtool/cias,fredtool/boot9strap,fredtool/luma/payloads}
+mkdir -p {soundhax/3ds,soundhax/cias,soundhax/boot9strap,soundhax/luma/payloads} # saves me the slightest bit of time later
+mkdir -p {usm/3ds,usm/cias,usm/luma/payloads}
 mkdir -p {pichaxx/3ds,pichaxx/cias,pichaxx/boot9strap,pichaxx/luma/payloads}
 
 echo "Creating output dir"
@@ -105,38 +99,33 @@ echo "Putting pichaxx related files in correct locations"
 cp *.cia pichaxx/cias
 cp *.3dsx pichaxx/3ds
 mv pichaxx/3ds/boot.3dsx pichaxx/boot.3dsx
-cp otherapp.bin pichaxx
+mv otherapp.bin pichaxx
 cp boot.firm pichaxx/boot.firm
 cp GodMode9.firm pichaxx/luma/payloads
 cp -r gm9 pichaxx/gm9
-cp boot9strap.* pichaxx/boot9strap
-cp SafeB9SInstaller.bin pichaxx
+mv boot9strap.* pichaxx/boot9strap
+mv SafeB9SInstaller.bin pichaxx
 cd pichaxx
 zip -r pichaxx.zip * 
 mv pichaxx.zip ../out
 cd ..
 rm -rf pichaxx
 
-###################
-# fwedtool is old #
-###################
-echo "Putting fredtool related files in correct locations"
-mv *.cia fredtool/cias
-mv *.3dsx fredtool/3ds
-mv fredtool/3ds/boot.3dsx fredtool/boot.3dsx
-mv otherapp.bin fredtool
-mv boot.firm fredtool/boot.firm
-mv GodMode9.firm fredtool/luma/payloads
-mv gm9 fredtool/gm9
-mv boot9strap.* fredtool/boot9strap
-mv private fredtool/
-mv SafeB9SInstaller.bin fredtool
-mv boot.nds fredtool
-cd fredtool
-zip -r fredtool.zip * 
-mv fredtool.zip ../out
+################################
+# unsafe mode is actually safe #
+################################
+echo "Putting USM related files in correct locations"
+mv *.cia usm/cias
+mv *.3dsx usm/3ds
+mv usm/3ds/boot.3dsx usm/boot.3dsx
+mv boot.firm usm/boot.firm
+mv GodMode9.firm usm/luma/payloads
+mv gm9 usm/gm9
+cd usm
+zip -r usm.zip * 
+mv usm.zip ../out
 cd ..
-rm -rf fredtool
+rm -rf usm
 
 ###########
 # md5sums #
