@@ -24,14 +24,8 @@ rm -rf FBI.zip
 echo "Downloading Anemone"
 curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/astronautlevel2/Anemone3DS/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
 
-echo "Downloading Checkpoint"
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
-
 echo "Downloading Universal Updater"
 curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Universal-Team/Universal-Updater/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
-
-echo "Downloading Homebrew Launcher Wrapper" # is this just a blank cia to use as a forwarder?
-curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/mariohackandglitch/homebrew_launcher_dummy/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 
 echo "Downloading GodMode9"
 curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
@@ -51,19 +45,20 @@ wget -q "https://github.com/SciresM/boot9strap/releases/download/1.3/boot9strap-
 echo "Downloading SafeB9SInstaller"
 wget -q "https://github.com/d0k3/SafeB9SInstaller/releases/download/v0.0.7/SafeB9SInstaller-20170605-122940.zip" # Same reason as above
 
-echo "Downloading frogminer_save"
-wget -q "https://github.com/zoogie/Frogminer/releases/download/v1.0/Frogminer_save.zip" # same reason as above
+echo "Downloading Homebrew Launcher Wrapper" # is this just a blank cia to use as a forwarder?
+wget -q "https://github.com/PabloMK7/homebrew_launcher_dummy/releases/download/v1.0/Homebrew_Launcher.cia" # Same reason as above
 
-echo "Downloading b9sTool"
-wget -q "https://github.com/zoogie/b9sTool/releases/download/v6.0.1/release_6.0.1.zip" # same reason as above
+echo "Downloading Checkpoint"
+wget -q "https://github.com/FlagBrew/Checkpoint/releases/download/v3.7.4/Checkpoint.cia" # Using older release for now as newer one broke:tm:
 
 #####################
 # make some folders #
 #####################
 echo "Creating directories for each catalyst"
-mkdir -p {soundhax/3ds,soundhax/cias,soundhax/boot9strap,soundhax/luma/payloads}
-mkdir -p {fredtool/3ds,fredtool/cias,fredtool/boot9strap,fredtool/luma/payloads}
+mkdir -p {soundhax/3ds,soundhax/cias,soundhax/boot9strap,soundhax/luma/payloads} # saves me the slightest bit of time later
+mkdir -p {usm/3ds,usm/cias,usm/luma/payloads}
 mkdir -p {pichaxx/3ds,pichaxx/cias,pichaxx/boot9strap,pichaxx/luma/payloads}
+mkdir -p {ntrboot/3ds,ntrboot/cias,ntrboot/boot9strap,ntrboot/luma/payloads}
 
 echo "Creating output dir"
 mkdir out
@@ -105,38 +100,54 @@ echo "Putting pichaxx related files in correct locations"
 cp *.cia pichaxx/cias
 cp *.3dsx pichaxx/3ds
 mv pichaxx/3ds/boot.3dsx pichaxx/boot.3dsx
-cp otherapp.bin pichaxx
+mv otherapp.bin pichaxx
 cp boot.firm pichaxx/boot.firm
 cp GodMode9.firm pichaxx/luma/payloads
 cp -r gm9 pichaxx/gm9
 cp boot9strap.* pichaxx/boot9strap
-cp SafeB9SInstaller.bin pichaxx
+mv SafeB9SInstaller.bin pichaxx
 cd pichaxx
 zip -r pichaxx.zip * 
 mv pichaxx.zip ../out
 cd ..
 rm -rf pichaxx
 
-###################
-# fwedtool is old #
-###################
-echo "Putting fredtool related files in correct locations"
-mv *.cia fredtool/cias
-mv *.3dsx fredtool/3ds
-mv fredtool/3ds/boot.3dsx fredtool/boot.3dsx
-mv otherapp.bin fredtool
-mv boot.firm fredtool/boot.firm
-mv GodMode9.firm fredtool/luma/payloads
-mv gm9 fredtool/gm9
-mv boot9strap.* fredtool/boot9strap
-mv private fredtool/
-mv SafeB9SInstaller.bin fredtool
-mv boot.nds fredtool
-cd fredtool
-zip -r fredtool.zip * 
-mv fredtool.zip ../out
+################################
+# unsafe mode is actually safe #
+################################
+echo "Putting USM related files in correct locations"
+cp *.cia usm/cias
+cp *.3dsx usm/3ds
+mv usm/3ds/boot.3dsx usm/boot.3dsx
+cp boot.firm usm/boot.firm
+cp GodMode9.firm usm/luma/payloads
+cp -r gm9 usm/gm9
+cd usm
+zip -r usm.zip * 
+mv usm.zip ../out
 cd ..
-rm -rf fredtool
+rm -rf usm
+
+##################################
+# pay 20USD for CFW with ntrboot #
+##################################
+echo "Putting ntrboot related files in correct locations"
+mv *.cia ntrboot/cias
+mv *.3dsx ntrboot/3ds
+mv ntrboot/3ds/boot.3dsx ntrboot/boot.3dsx
+mv boot.firm ntrboot/luma/boot.firm
+mv GodMode9.firm ntrboot/luma/payloads
+mv boot9strap.* ntrboot/boot9strap
+mv gm9 ntrboot/gm9
+mv SafeB9SInstaller.firm ntrboot/boot.firm
+echo "!!! boot.firm is the SafeB9Sinstaller. Once you have used it to install b9s successfully, you should delete it, and move boot.firm from the /luma folder onto the root folder. 
+
+Your device will only boot to SafeB9Sinstaller until you do this. !!!" > ntrboot/readme.txt
+cd ntrboot
+zip -r ntrboot.zip * 
+mv ntrboot.zip ../out
+cd ..
+rm -rf ntrboot
 
 ###########
 # md5sums #
