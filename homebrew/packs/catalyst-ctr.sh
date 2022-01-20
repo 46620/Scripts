@@ -55,10 +55,10 @@ wget -q "https://github.com/FlagBrew/Checkpoint/releases/download/v3.7.4/Checkpo
 # make some folders #
 #####################
 echo "Creating directories for each catalyst"
-mkdir -p {soundhax/3ds,soundhax/cias,soundhax/boot9strap,soundhax/luma/payloads} # saves me the slightest bit of time later
-mkdir -p {usm/3ds,usm/cias,usm/luma/payloads}
-mkdir -p {pichaxx/3ds,pichaxx/cias,pichaxx/boot9strap,pichaxx/luma/payloads}
-mkdir -p {ntrboot/3ds,ntrboot/cias,ntrboot/boot9strap,ntrboot/luma/payloads}
+mkdir -p soundhax/{3ds,cias,boot9strap,luma/payloads} # saves me the slightest bit of time later
+mkdir -p usm/{3ds,cias,luma/payloads}
+mkdir -p pichaxx/{3ds,cias,boot9strap,luma/payloads}
+mkdir -p ntrboot/{3ds,cias,boot9strap,luma/payloads}
 
 echo "Creating output dir"
 mkdir out
