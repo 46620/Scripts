@@ -89,7 +89,7 @@ mv hekate*.bin atmosphere/reboot_payload.bin
 # Frii logo #
 #############
 # echo Adding bootlogo
-wget -O bootloader/bootlogo.bmp "https://46620.moe/bootlogo.bmp"
+wget -O bootloader/bootlogo.bmp "https://cdn.discordapp.com/attachments/441119928334942218/939026586630512690/bootlogo.bmp"
 
 ###########
 # Archive #
