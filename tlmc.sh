@@ -13,7 +13,7 @@ Options:
     --tta-flac       Convert all tta files to flac and exit
     --album-art      Adds album art to split flacs (not implemented)
     --flac-cue       Splits flac files based on cue sheet and renames split files (not fully tested)
-    --setup          Installs all the tools that will be required (only supports ubuntu and arch currently)
+    --setup          Installs all the tools that will be required
     --update         Updates the script to the latest
 
 Info: This script should be ran with a directory looking like this in order to work properly. (this does not apply to --download)
@@ -80,15 +80,13 @@ tlmc_split(){
 }
 
 tlmc_setup() {
-    echo "Installing the required programs"
-    find_linux(){
-	    linux=`cat /etc/os-release | grep ID_LIKE= | cut -b 9-`
-	    case $linux in
-		    [arch]) sudo pacman -S shntool cuetools flac aria2;;
-            [debain]) sudo apt install -y shntool cuetools flac aria2;;
-            [*]) echo "Your current setup is not supported by this script. If you want your system supported, please make a PR.";;
-        esac
-    }
+    echo "Installing the required programs and adding the script to PATH"
+    linux=`cat /etc/os-release | grep ID= | cut -b 4- | head -1`
+    case $linux in
+	    arch|manjaro|endeavouros) sudo pacman -S shntool cuetools flac aria2;;
+        ubuntu|linuxmint) sudo apt install -y shntool cuetools flac aria2;;
+        *) echo "Your current setup is not supported by this script. If you want your system supported, please make a PR.";;
+    esac
 }
 
 tlmc_update() {
