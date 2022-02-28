@@ -1,9 +1,11 @@
 # fnf
 
-Im gonna be real, im writing this at 1:18am and i do not plan to update this literally ever, once it works it works.
+Wanna be able to build fnf mods without having to deal with the nightmare of haxe? I gotchu, run one of the following commands for the engine you wanna build for.
 
-`docker build --tag fnf-build .`
+`docker build --tag fnf-kade -f kade.Dockerfile .`
 
-then go into the source path you wanna build and do `docker run -i -t --rm -v "$(pwd):/fnf" fnf-build`
+`docker build --tag fnf-psych -f psych.Dockerfile .`
+
+then go into the source path you wanna build and do `docker run -i -t --rm -v "$(pwd):/fnf" fnf-engine` (replace engine with which one you wanna build)
 
 this took 45 minutes to get working. I stole the entire concept from [docker-arch-build](https://github.com/nubs/docker-arch-build) so go star the repo or some shit.
