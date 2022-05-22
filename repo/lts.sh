@@ -5,7 +5,7 @@ sed -i 's@pkgname=("$pkgbase" "$pkgbase-headers" "$pkgbase-docs")@pkgname=("$pkg
 sed -i 's@make htmldocs@@g' PKGBUILD
 
 ed PKGBUILD <<EOF
-68i
+69i
   make LSMOD=/etc/modprobed.db localmodconfig
 .
 w
