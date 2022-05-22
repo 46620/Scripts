@@ -6,7 +6,7 @@ sed -i 's@make htmldocs@@g' PKGBUILD
 
 ed PKGBUILD <<EOF
 69i
-  make LSMOD=/etc/modprobed.db localmodconfig
+  yes n | make LSMOD=/etc/modprobed.db localmodconfig
 .
 w
 q
