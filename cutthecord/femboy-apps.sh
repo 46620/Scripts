@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # This script is just to pull the latest version of apps to my gitlab server to be patched with new stuff (or as a backup for old versions)
+# Script no longer in use, I can't be fucked to maintain this project anymore.
 
 #
 # Env Shit
@@ -33,6 +34,6 @@ if md5sum --status -c discord.md5; then
         cd ..
         rm -rf *discord*
 else
-        echo "Hashes do not match, not going to push to gitlab"
+        echo "Hashes do not match, not going to push to gitea"
         rm -rf *discord*
 fi
