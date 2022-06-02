@@ -30,9 +30,9 @@ tlmc_download() {
         echo "Aria2c not found. Please run --setup and then rerun this"
     else
         echo "Downloading torrent file"
-        wget "https://cdn.discordapp.com/attachments/337095801820020746/892792704298262528/Touhou_lossless_music_collection_v.19.torrent"
+        wget -q "https://cdn.discordapp.com/attachments/337095801820020746/892792704298262528/Touhou_lossless_music_collection_v.19.torrent"
         echo "Downloading the collection using Aria2c (This will take at minimum 5 hours)"
-        aria2c --seed-time=0 Touhou_lossless_music_collection_v.19.torrent
+        aria2c --seed-time=0 --enable-dht=true --enable-peer-exchange=true Touhou_lossless_music_collection_v.19.torrent
     fi
 }
 
@@ -52,7 +52,7 @@ tlmc_art() {
     else
         echo "Downloading scans to pull album art from"
         wget -q "https://cdn.discordapp.com/attachments/337095801820020746/897738282601967626/Touhou_album_image_collection_v.19.torrent"
-        aria2c --seed-time=0 Touhou_album_image_collection_v.19.torrent
+        aria2c --seed-time=0 --enable-dht=true --enable-peer-exchange=true Touhou_album_image_collection_v.19.torrent
         # TODO: make sure shit is in the right spot
         #       make sure all images can be split the same
         #       write the split function
@@ -83,7 +83,8 @@ tlmc_setup() {
     echo "Installing the required programs and adding the script to PATH"
     linux=`cat /etc/os-release | grep ID= | cut -b 4- | head -1`
     case $linux in
-	    arch|manjaro|endeavouros) sudo pacman -S shntool cuetools flac aria2;;
+	    arch|manjaro|endeavouros) sudo pacman -S cuetools flac aria2
+        git clone https://aur.archlinux.org/shntool.git && cd shntool && makepkg -si;;
         ubuntu|linuxmint) sudo apt install -y shntool cuetools flac aria2;;
         *) echo "Your current setup is not supported by this script. If you want your system supported, please make a PR.";;
     esac
