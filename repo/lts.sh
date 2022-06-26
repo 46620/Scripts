@@ -3,7 +3,7 @@
 
 sed -i 's@pkgbase=linux-lts@pkgbase=linux-lts-server@g' PKGBUILD
 sed -i 's@pkgname=("$pkgbase" "$pkgbase-headers" "$pkgbase-docs")@pkgname=("$pkgbase" "$pkgbase-headers")@g' PKGBUILD
-sed -i 's@make htmldocs@@g' PKGBUILD
+sed -i 's@make htmldocs@make@g' PKGBUILD
 
 ed PKGBUILD <<EOF
 69i
