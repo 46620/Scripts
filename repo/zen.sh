@@ -5,7 +5,7 @@ curl -o kvm.patch "https://raw.githubusercontent.com/46620/patches/master/kvm.pa
 gpg --keyserver hkps://keys.openpgp.org --recv-key 3B94A80E50A477C7 # key fails normally, this is needed only for first run, but won't break the script if ran multiple times.
 sed -i 's@pkgbase=linux-zen@pkgbase=linux-zen-kvm@g' PKGBUILD
 sed -i 's@pkgname=("$pkgbase" "$pkgbase-headers" "$pkgbase-docs")@pkgname=("$pkgbase" "$pkgbase-headers")@g' PKGBUILD
-sed -i 's@make htmldocs@@g' PKGBUILD
+sed -i 's@make htmldocs@make@g' PKGBUILD
 
 ed PKGBUILD <<EOF
 21i
