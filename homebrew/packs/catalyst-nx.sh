@@ -26,7 +26,7 @@ mkdir -p atmosphere/hosts
 wget -qO atmosphere/hosts/emummc.txt "https://nh-server.github.io/switch-guide/files/emummc.txt"
 
 echo "Downloading hekate files from meem & nh"
-wget -qO bootloader/hekate_ipl.ini "https://nh-server.github.io/switch-guide/files/emu/hekate_ipl.ini"
+wget -qO bootloader/hekate_ipl.ini "https://suchmememanyskill.github.io/guides/Img/hekate_ipl.ini"
 wget -qO bootloader/patches.ini "https://suchmememanyskill.github.io/guides/Img/patches.ini"
 
 echo "Downloading boot logos" # Cause people need these for some fucking reason
