@@ -30,17 +30,14 @@ curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Univer
 echo "Downloading GodMode9"
 curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/d0k3/GodMode9/releases/latest | jq -r '.assets[].browser_download_url' | wget -qi -
 
-echo "Downloading DSP1"
-wget -q "https://github.com/zoogie/DSP1/releases/download/v1.0/DSP1.cia" # Not updated since 2017 so not gonna do an API call
-
-echo "Downloading ctr-no-timeoffset" # Not updated since 2019 so not gonna do an API call
-wget -q "https://github.com/ihaveamac/ctr-no-timeoffset/releases/download/v1.1/ctr-no-timeoffset.3dsx"
+echo "Downloading unSAFE_MODE"
+curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/zoogie/unSAFE_MODE/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qi -
 
 echo "Downloading universal-otherapp"
-wget -q "https://github.com/TuxSH/universal-otherapp/releases/download/v1.3.0/otherapp.bin" # I do not think this is gonna get many updates, if it starts updating a lot I'll use the api
+wget -q "https://github.com/TuxSH/universal-otherapp/releases/download/v1.4.0/otherapp.bin" # I do not think this is gonna get many updates, if it starts updating a lot I'll use the api
 
 echo "Downloading boot9strap"
-wget -q "https://github.com/SciresM/boot9strap/releases/download/1.3/boot9strap-1.3.zip" # Has not been updated since 2017, should be no reason to call the api
+wget -q "https://github.com/SciresM/boot9strap/releases/download/1.4/boot9strap-1.4.zip" # Same reason as above
 
 echo "Downloading SafeB9SInstaller"
 wget -q "https://github.com/d0k3/SafeB9SInstaller/releases/download/v0.0.7/SafeB9SInstaller-20170605-122940.zip" # Same reason as above
@@ -51,14 +48,23 @@ wget -q "https://github.com/PabloMK7/homebrew_launcher_dummy/releases/download/v
 echo "Downloading Checkpoint"
 wget -q "https://github.com/FlagBrew/Checkpoint/releases/download/v3.7.4/Checkpoint.cia" # Using older release for now as newer one broke:tm:
 
+echo "Downloading frogminer_save"
+wget -q "https://github.com/zoogie/Frogminer/releases/download/v1.0/Frogminer_save.zip" # same reason as above
+
+echo "Downloading b9sTool"
+wget -q "https://github.com/zoogie/b9sTool/releases/download/v6.1.1/release_6.1.1.zip" # same reason as above
+
+echo "Downloading BannerBomb3"
+wget -q "https://github.com/lifehackerhansol/Bannerbomb3/releases/download/v3.0-lhs2/bb3.bin" # reading comprehension edition by lifehackerhansol:tm:
+
 #####################
 # make some folders #
 #####################
 echo "Creating directories for each catalyst"
-mkdir -p soundhax/{3ds,cias,boot9strap,luma/payloads} # saves me the slightest bit of time later
-mkdir -p usm/{3ds,cias,luma/payloads}
-mkdir -p pichaxx/{3ds,cias,boot9strap,luma/payloads}
-mkdir -p ntrboot/{3ds,cias,boot9strap,luma/payloads}
+mkdir -p {soundhax,usm,pichaxx,ntrboot,ssloth,fredtool} # saves me the slightest bit of time later
+
+echo "Creating common directory"
+mkdir -p common/{3ds,cias,boot9strap,luma/payloads}
 
 echo "Creating output dir"
 mkdir out
@@ -69,23 +75,30 @@ mkdir out
 echo "Do the unzipping"
 unzip -q Luma3DSv*.zip;rm Luma3DSv*.zip
 mkdir tmp;mv GodMode9*.zip tmp;cd tmp/;unzip -q *.zip;mv GodMode9.firm ..; mv -f gm9 ..;cd ..;rm -rf tmp
-unzip -q boot9strap-1.3.zip;rm boot9strap-1.3.zip
-mkdir tmp;mv SafeB9SInstaller*.zip tmp;cd tmp/;unzip -q *.zip;mv SafeB9SInstaller.bin ..;cd ..;rm -rf tmp
+unzip -q boot9strap-1.4.zip;rm boot9strap-1.4.zip
+mkdir tmp;mv SafeB9SInstaller*.zip tmp;cd tmp/;unzip -q *.zip;mv SafeB9SInstaller.bin ..;mv SafeB9SInstaller.firm ..;cd ..;rm -rf tmp
+mkdir tmp;mv RELEASE_v1.3.zip tmp;cd tmp/;unzip -q RELEASE_v1.3.zip;mv -f otherapps_with_CfgS ..;mv -f slotTool ..;mv -f usm.bin ..;cd ..;rm -rf tmp
 unzip -q Frogminer_save.zip;rm Frogminer_save.zip
-mkdir tmp;mv release_6.0.1.zip tmp;cd tmp/;unzip -q *.zip;mv release_6.0.1/boot.nds ..;cd ..;rm -rf tmp
+mkdir tmp;mv release_6.1.1.zip tmp;cd tmp/;unzip -q *.zip;mv boot.nds ..;cd ..;rm -rf tmp
+
+#########################
+# extract common things #
+#########################
+echo "Common directories"
+mv *.cia common/cias
+mv FBI.3dsx common/3ds/FBI.3dsx # I can't automate .3dsx batch copies, but also there's only one 3dsx so whatever
+mv boot.3dsx common/boot.3dsx
+mv boot.firm common/boot.firm
+mv GodMode9.firm common/luma/payloads
+mv -f gm9 common/gm9
+mv boot9strap.* common/boot9strap
 
 ################
 # yay soundhax #
 ################
 echo "Putting soundhax related files in correct locations"
-cp *.cia soundhax/cias
-cp *.3dsx soundhax/3ds
-mv soundhax/3ds/boot.3dsx soundhax/boot.3dsx
+cp -r common/* soundhax
 cp otherapp.bin soundhax
-cp boot.firm soundhax/boot.firm
-cp GodMode9.firm soundhax/luma/payloads
-cp -r gm9 soundhax/gm9
-cp boot9strap.* soundhax/boot9strap
 cp SafeB9SInstaller.bin soundhax
 cd soundhax
 zip -r soundhax.zip * 
@@ -93,19 +106,32 @@ mv soundhax.zip ../out
 cd ..
 rm -rf soundhax
 
+##############################
+# browserhax just won't die #
+##############################
+echo "Putting SSLoth-Browser related files in correct locations"
+cp -r common/* ssloth
+mv otherapp.bin ssloth/arm11code.bin
+cp SafeB9SInstaller.bin ssloth
+cd ssloth
+zip -r ssloth.zip * 
+mv ssloth.zip ../out
+cd ..
+rm -rf ssloth
+
 ####################
 # methax? pichaxx? #
 ####################
 echo "Putting pichaxx related files in correct locations"
-cp *.cia pichaxx/cias
-cp *.3dsx pichaxx/3ds
-mv pichaxx/3ds/boot.3dsx pichaxx/boot.3dsx
-mv otherapp.bin pichaxx
-cp boot.firm pichaxx/boot.firm
-cp GodMode9.firm pichaxx/luma/payloads
-cp -r gm9 pichaxx/gm9
-cp boot9strap.* pichaxx/boot9strap
-mv SafeB9SInstaller.bin pichaxx
+cp -r common/* pichaxx
+mv slotTool pichaxx/3ds/slotTool
+mv otherapps_with_CfgS pichaxx/otherapps_with_CfgS
+cp usm.bin pichaxx/usm.bin
+cp SafeB9SInstaller.bin pichaxx
+echo "!!! You must copy the corresponding *.bin file from the otherapps_with_CfgS folder for your console to the SD root,
+and rename it to otherapp.bin.
+
+The exploit will fail without it. !!!" > pichaxx/readme.txt
 cd pichaxx
 zip -r pichaxx.zip * 
 mv pichaxx.zip ../out
@@ -116,29 +142,37 @@ rm -rf pichaxx
 # unsafe mode is actually safe #
 ################################
 echo "Putting USM related files in correct locations"
-cp *.cia usm/cias
-cp *.3dsx usm/3ds
-mv usm/3ds/boot.3dsx usm/boot.3dsx
-cp boot.firm usm/boot.firm
-cp GodMode9.firm usm/luma/payloads
-cp -r gm9 usm/gm9
+cp -r common/* usm
+cp bb3.bin usm
+mv usm.bin usm
+mv SafeB9SInstaller.bin usm
 cd usm
 zip -r usm.zip * 
 mv usm.zip ../out
 cd ..
 rm -rf usm
 
+###################
+# fwedtool is old #
+###################
+echo "Putting fredtool related files in correct locations"
+cp -r common/* fredtool
+mv bb3.bin fredtool
+mv private fredtool/
+mv boot.nds fredtool
+cd fredtool
+zip -r fredtool.zip * 
+mv fredtool.zip ../out
+cd ..
+rm -rf fredtool
+
 ##################################
 # pay 20USD for CFW with ntrboot #
 ##################################
 echo "Putting ntrboot related files in correct locations"
-mv *.cia ntrboot/cias
-mv *.3dsx ntrboot/3ds
-mv ntrboot/3ds/boot.3dsx ntrboot/boot.3dsx
-mv boot.firm ntrboot/luma/boot.firm
-mv GodMode9.firm ntrboot/luma/payloads
-mv boot9strap.* ntrboot/boot9strap
-mv gm9 ntrboot/gm9
+mv -f common/* ntrboot
+rm -rf common # cleanup
+mv ntrboot/boot.firm ntrboot/luma/boot.firm
 mv SafeB9SInstaller.firm ntrboot/boot.firm
 echo "!!! boot.firm is the SafeB9Sinstaller. Once you have used it to install b9s successfully, you should delete it, and move boot.firm from the /luma folder onto the root folder. 
 
