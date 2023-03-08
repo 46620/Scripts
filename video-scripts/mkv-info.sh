@@ -7,12 +7,11 @@ readarray -d '' files_array < <(find . -name "*.mkv" | sed 's@.mkv@@g');
 IFS=$'\n' files_sorted=($(sort <<<"${files_array[*]}"))
 unset IFS
 
-# echo file name, cd into folder, edit the video track name, cd back out, repeat
+# echo file name, cd into folder, edits some metadata, cd back out, repeat
 for video in "${files_sorted[@]}"
 do
-    echo "`basename "$file"`"
-    cd "`dirname "$file"`"
-    mkvpropedit "`basename "$file.mkv"`" -d title
-    mkvpropedit "`basename "$file.mkv"`" -a title="`basename "$file"`"
+    echo "`basename "$video"`"
+    cd "`dirname "$video"`"
+    mkvpropedit "`basename "$video.mkv"`" --edit info --set title="`basename "$video"`" --edit track:v1 --set language=jpn
     cd "$script_home"
 done
