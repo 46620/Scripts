@@ -1,8 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Version=1.0
-Type=Application
-Terminal=false
-Exec=/usr/share/duncecord/duncecord.sh
-Name=Discord with working screenshare audio and wayland support
-Icon=/usr/share/duncecord/icon.png
