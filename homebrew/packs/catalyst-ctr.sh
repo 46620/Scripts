@@ -186,9 +186,9 @@ rm -rf ntrboot
 ###########
 # md5sums #
 ###########
-for cum in out/*
+for pack in out/*
 do
-    md5sum "$cum" > "$cum.md5"
+    md5sum "$pack" > "$pack.md5"
 done
 
 ###########

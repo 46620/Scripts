@@ -69,8 +69,8 @@ main() {
     PS3='What would you like to do: '
     options=("Send payload (WIP)" "Dump game over FTP" "Build fakepkg (WIP)" "Remote Install" "About" "Update" "Quit")
     clear
-    select cum in "${options[@]}"; do
-        case $cum in
+    select com in "${options[@]}"; do
+        case $com in
             "Send payload (WIP)")
                 echo "Currently the script crashes the console."
                 exit 1

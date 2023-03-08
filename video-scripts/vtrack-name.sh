@@ -8,11 +8,11 @@ IFS=$'\n' files_sorted=($(sort <<<"${files_array[*]}"))
 unset IFS
 
 # echo file name, cd into folder, edit the video track name, cd back out, repeat
-for cum in "${files_sorted[@]}"
+for video in "${files_sorted[@]}"
 do
-    echo "`basename "$cum"`"
-    cd "`dirname "$cum"`"
-    mkvpropedit "`basename "$cum.mkv"`" -d title
-    mkvpropedit "`basename "$cum.mkv"`" -a title="`basename "$cum"`"
+    echo "`basename "$file"`"
+    cd "`dirname "$file"`"
+    mkvpropedit "`basename "$file.mkv"`" -d title
+    mkvpropedit "`basename "$file.mkv"`" -a title="`basename "$file"`"
     cd "$script_home"
 done
