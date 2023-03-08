@@ -1,32 +1,18 @@
 #!/bin/bash
 
-#set -x
-set -e
-cd Anime
-folders=( "$D"* )
+# set file limit up in case I merge this with my AV1 encoding script, get full path of all mkv files in sub directories (strip the extension), and sort them A-Z
+ulimit -n 200000
+script_home=`pwd`
+readarray -d '' files_array < <(find . -name "*.mkv" | sed 's@.mkv@@g');
+IFS=$'\n' files_sorted=($(sort <<<"${files_array[*]}"))
+unset IFS
 
-for cum in "${folders[@]}"
+# echo file name, cd into folder, edit the video track name, cd back out, repeat
+for cum in "${files_sorted[@]}"
 do
-    cd "$cum"
-    folders2=()
-    folders2=( "$D"* )
-    for cum2 in "${folders2[@]}"
-    do
-        cd "$cum2"
-        mkdir tmp
-        files=()
-            while IFS=  read -r -d $'\0'; do
-            files+=("$REPLY")
-            done < <(find . -iname "*.mkv" -print0 | sed 's@./@@g' | sed 's/.mkv//g')
-        echo "${files[@]}"
-        for cum in "${files[@]}"
-            do
-                echo $cum
-                ffmpeg -i "$cum.mkv" -map 0 -c copy -metadata:s:v:0 title="$cum" "tmp/$cum.mkv"
-            done
-        mv tmp/* .
-        rm -r tmp
-        cd ..
-    done
-    cd ..
+    echo "`basename "$cum"`"
+    cd "`dirname "$cum"`"
+    mkvpropedit "`basename "$cum.mkv"`" -d title
+    mkvpropedit "`basename "$cum.mkv"`" -a title="`basename "$cum"`"
+    cd "$script_home"
 done
