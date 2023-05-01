@@ -8,7 +8,7 @@ sed -i 's@pkgname=("$pkgbase" "$pkgbase-headers" "$pkgbase-docs")@pkgname=("$pkg
 sed -i 's@make htmldocs@make@g' PKGBUILD
 
 ed PKGBUILD <<EOF
-21i
+33i
   kvm.patch
 .
 w
