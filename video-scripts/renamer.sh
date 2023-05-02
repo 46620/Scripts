@@ -54,6 +54,7 @@ curl -o /tmp/46620/tmp_show/show_page --user-agent -k -x "$USER_AGENT" -k -x soc
 echo " [ * ] Ripping episode names, please wait a moment"
 SHOW_NAME=`cat /tmp/46620/tmp_show/show_page | grep 'class="anime"' | tail -n1 | cut -b 28- | rev | cut -b 6- | rev`
 cat /tmp/46620/tmp_show/show_page | grep "title name episode" -A 2 | sed 's/^.*\(itemprop="name".*\).*$/\1/' | cut -b 17- | sed '1~2d' | sed '/^$/d' | head -n 1059 > /tmp/46620/tmp_show/ep_name
+sed -i sed "s@\`@'@g" /tmp/46620/tmp_show/ep_name
 readarray -t ep_name < /tmp/46620/tmp_show/ep_name
 cd "$SHOW_PATH"
 
