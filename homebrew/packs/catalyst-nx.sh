@@ -44,7 +44,7 @@ function apps() {
 
 function payloads() {
     echo "Downloading Payloads"
-    curl -L https://vps.suchmeme.nl/git/api/v1/repos/mudkip/Lockpick_RCM/releases | jq -r | grep browser_download_url | cut -b 33- | tr -d '"' | wget -qO "bootloader/payloads/Lockpick_RCM.bin" -i -
+    curl -sLq https://vps.suchmeme.nl/git/api/v1/repos/mudkip/Lockpick_RCM/releases | jq -r | grep browser_download_url | cut -b 33- | tr -d '"' | wget -qO "bootloader/payloads/Lockpick_RCM.bin" -i -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/suchmememanyskill/TegraExplorer/releases/latest | jq -r '.assets[].browser_download_url' | wget -qO "bootloader/payloads/TegraExplorer.bin" -i -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.bin" | head -1 | wget -q "bootloader/payloads/fusee.bin" -i -
     echo "Making hekate reboot_payload.bin"
