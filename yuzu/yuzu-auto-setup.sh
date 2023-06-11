@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This is a bashified version of my friends yuzu setup script that pulls firmware ONLY! Dump your keys yourself as I don't wanna get a DMCA takedown by Nintendo.
+# This script will automate the setup of yuzu-ea on Linux devices, including the Steam Deck.
 
 LATEST_FIRMWARE=`curl -s https://yls8.mtheall.com/ninupdates/feed.php | grep -m 1 "Switch" | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+"`
 YUZU_DIR="$HOME/.local/share/yuzu"
@@ -19,8 +19,16 @@ else
     echo $LATEST_FIRMWARE > $YUZU_DIR/firmware.txt
 fi
 
-# TODO: find a way to include key grabbing without having to deep throat Nintendo's Legal team
+echo " [ * ] Updating prod.keys"
+# curl -o "$YUZU_DIR/keys/prod.keys" <PROVIDE YOUR OWN SOURCE! I DON'T WANT A DMCA>
 
 echo " [ * ] Downloading and adding the latest AppImage to your Applications folder"
-curl -s https://api.github.com/repos/pineappleEA/pineapple-src/releases/latest | jq -r ".assets[0] | .browser_download_url" | wget -qO "$HOME/Applications/Yuzu.AppImage" -i -
-chmod +x "$HOME/Applications/Yuzu.AppImage"
+curl -s https://api.github.com/repos/pineappleEA/pineapple-src/releases/latest | jq -r ".assets[0] | .browser_download_url" | wget -qO "$HOME/Applications/yuzu.AppImage" -i -
+chmod +x "$HOME/Applications/yuzu.AppImage"
+
+echo " [ * ] Installing a systemd service and timer to auto update yuzu for you"
+mkdir -p "$HOME/.config/systemd/user" 
+mkdir -p "$HOME/.local/share/46620/yuzu"
+cp -vr yuzu-update.{service,timer} "$HOME/.config/systemd/user"
+cp -vr yuzu-update.sh "$HOME/.local/share/46620/yuzu"
+systemctl --user enable yuzu-update.timer

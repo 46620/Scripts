@@ -1,0 +1,9 @@
+[Unit]
+Description=Update yuzu every hour
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1h
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=Update yuzu every hour on the hour
+
+[Service]
+ExecStart=%h/.local/share/46620/yuzu/yuzu-update.sh
+
+[Install]
+WantedBy=default.target
