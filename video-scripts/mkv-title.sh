@@ -6,6 +6,7 @@ readarray -d '' files_array < <(find . -iname "*.mkv" | sed 's/.mkv//g')
 IFS=$'\n' files_sorted=($(sort <<<"${files_array[*]}"))
 unset IFS
 
+# Store file names
 function store() {
         for ep in "${files_sorted[@]}"
         do
@@ -15,6 +16,7 @@ function store() {
         done
 }
 
+# Restore file names
 function fix() {
         echo " [ * ] Fixing files. This will take a while. (Nothing will be outputted to the screen unless set -x is uncommented)"
         for ep in "${files_sorted[@]}"
