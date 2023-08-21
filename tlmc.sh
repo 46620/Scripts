@@ -37,6 +37,7 @@ tlmc_download() {
 }
 
 tlmc_convert() {
+    # TODO: MAKE FASTER
     echo "Converting all .tta files to .flac."
     find . -iname "*.tta" -exec ffmpeg -i \{\} \{\}.flac \;
     echo "Deleting the original .tta files."
@@ -45,7 +46,7 @@ tlmc_convert() {
 
 tlmc_art() {
     echo "This option is not implemented. This will be added in a later commit."
-    exit 0
+    exit 1
     if ! [ -x "$(command -v aria2c)" ]
     then
         echo "Aria2c not found. Please run --setup and then rerun this"
@@ -81,7 +82,8 @@ tlmc_split(){
 
 tlmc_setup() {
     echo "Installing the required programs and adding the script to PATH"
-    linux=`cat /etc/os-release | grep ID= | cut -b 4- | head -1`
+    # TODO: MAKE CLEANER
+    linux=`cat /etc/os-release | sed -n 's/^ID=//p'`
     case $linux in
 	    arch|manjaro|endeavouros) sudo pacman -S cuetools flac aria2
         git clone https://aur.archlinux.org/shntool.git && cd shntool && makepkg -si;;
