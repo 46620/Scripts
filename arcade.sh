@@ -23,7 +23,7 @@ vars() {
     HEIGHT=15
     WIDTH=40
     CHOICE_HEIGHT=6
-    BACKTITLE="46620 menu v0.0.1a"
+    BACKTITLE="46620 menu v0.0.2a"
     TITLE="ARCADE BOOT MENU"
     MENU="What would you like to play?"
     OPTIONS=(1 "ES-DE"
@@ -35,7 +35,7 @@ vars() {
 function operator() {
     OPTIONS=(1 "CLI"
          2 "Update emulator configs (WIP)"
-         3 "Update script (WIP)")
+         3 "Update script")
 
     OPERATE=$(DIALOGRC=arcade.dialog dialog --clear \
            --backtitle "$BACKTITLE" \
@@ -78,9 +78,14 @@ function update_emu_configs() {
 }
 
 function update() {
-    clear
-    echo "This feature is not added yet, please contact Mia for updates"
-    exit 1
+    local program_name
+    program_name=${0##*/}
+	clear
+	echo "Updating the script please wait..."
+	sleep 2
+	SCRIPT_PATH="`dirname \"$0\"`"
+	wget -O "$SCRIPT_PATH/$program_name" "https://raw.githubusercontent.com/46620/Scripts/master/arcade.sh"
+	exit
 }
 
 function menu_config() {
