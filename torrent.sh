@@ -25,7 +25,7 @@ mv "Miru Tights/Specials/Miru Tights Specials - 01.mkv" "Miru Tights/Specials/Mi
 # 6474c5 to 04377e
 echo "[ * ] Nothing changed from 6474c5 to 04377e"
 
-# 04377e to latest 4b627d
+# 04377e to 87ae2e
 echo "[ * ] 04377e to latest"
 rename -va "Enen no Shouboutai - S01" "En'en no Shouboutai - S01" **
 rename -va "Enen no Shouboutai - S02" "En'en no Shouboutai Ni no Shou - S02" **
