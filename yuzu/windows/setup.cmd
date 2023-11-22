@@ -13,9 +13,8 @@ REM Also fuck batch I hate it, fuck powershell, fuck windows, use Linux PLEASE
 
 REM This script is missing the following features from the Linux build
 REM Being written cleanly
-REM internet check
-REM disable fw download
-REM bg service
+REM Internet check
+REM Firmware version to prevent updating already updated firmware
 
 REM Set vars
 :vars
