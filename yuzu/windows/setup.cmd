@@ -1,7 +1,7 @@
 @echo off
 
 REM ZERO SUPPORT GIVEN! I DON'T USE WINDOWS
-@set scriptver=1.7.10
+@set scriptver=1.7.11
 color 0a
 
 REM Metadata
@@ -25,7 +25,7 @@ REM this was written by pbanj
 REM SWITCH FIRWMARE
 for /f tokens^=1^,^2^,^3^,^4^,5^,6^,7^,8^,9^ skip^=^119 %%g in ('curl -s --raw  https://www.nintendo.com/my/support/switch/system_update/index.html') do (if /i "%%~j"=="version:" set fw=%%~k)
 REM LIFTINSTALL VERSION (idk why they constantly update it)
-for /f tokens^=1^,^2^,^3^,^4^ delims^=^"^ eol^=^, %%g in ('curl -s --raw  https://api.github.com/repos/pineappleEA/yuzu-emu/liftinstall/latest') do (if /i "%%~h"=="tag_name" set tag=%%~j)
+for /f tokens^=1^,^2^,^3^,^4^ delims^=^"^ eol^=^, %%g in ('curl -s --raw  https://api.github.com/repos/yuzu-emu/liftinstall/latest') do (if /i "%%~h"=="tag_name" set tag=%%~j)
 
 set GITHUB_BASE_URL=https://raw.githubusercontent.com/46620/Scripts/master/yuzu/windows
 
