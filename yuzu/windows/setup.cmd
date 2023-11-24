@@ -1,7 +1,7 @@
 @echo off
 
 REM ZERO SUPPORT GIVEN! I DON'T USE WINDOWS
-@set scriptver=1.7.12
+@set scriptver=1.7.13
 color 0a
 
 REM Metadata
@@ -38,9 +38,10 @@ mkdir %YUZU_DIR%\keys
 REM Get and install latest fw and prod.keys
 :fwprod
 curl -L -o %TMP%\firmware.zip https://archive.org/download/nintendo-switch-global-firmwares/Firmware%%20%fw%.zip
+curl -L -o %TMP%\unzip.exe https://dl.46620.moe/unzip.exe
 cd /D %YUZU_DIR%\nand\system\Contents\registered
 del /Q *.nca
-tar -xvf %TMP%\firmware.zip
+%TMP%\unzip.exe %TMP%\firmware.zip
 curl -o %YUZU_DIR%\keys\prod.keys %PROD.KEYS%
 
 REM Install yuzu
