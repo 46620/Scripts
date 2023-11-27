@@ -8,7 +8,8 @@ REM this was written by pbanj
 for /f tokens^=1^,^2^,^3^,^4^,5^,6^,7^,8^,9^ skip^=^119 %%g in ('curl -s --raw  https://www.nintendo.com/my/support/switch/system_update/index.html') do (if /i "%%~j"=="version:" set fw=%%~k)
 echo Downloading firmware, this might take a bit
 curl -L -o %TMP%\firmware.zip https://archive.org/download/nintendo-switch-global-firmwares/Firmware%%20%fw%.zip
+curl -L -o %TMP%\unzip.exe https://dl.46620.moe/unzip.exe
 cd /D %YUZU_DIR%\nand\system\Contents\registered
 del /Q *.nca
-tar -xvf %TMP%\firmware.zip
+%TMP%\unzip.exe %TMP%\firmware.zip
 curl -o %YUZU_DIR%\keys\prod.keys %PROD.KEYS%
