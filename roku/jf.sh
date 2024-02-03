@@ -29,7 +29,7 @@ function check_power(){
     clear
     echo " [ * ] Checking if the Roku is on, and turning it on if not"
     set +e
-    curl http://192.168.1.28:8060/query/device-info | grep DisplayOff
+    curl http://$ROKU_IP:8060/query/device-info | grep DisplayOff
     if [ $? -eq 0  ]
     then
         echo " [ * ] Turning Roku on"
