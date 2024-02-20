@@ -10,18 +10,19 @@ unset IFS
 function store() {
         for ep in "${files_sorted[@]}"
         do
-                ep2=`basename "$ep"`
-                echo " [ * ] `basename "$ep"`"
-                mkvpropedit "$ep.mkv" --edit info --set "title=$ep2" > /dev/null 2>&1 &
+            ep2=`basename "$ep"`
+            echo "[ * ] $ep2"
+            mkvpropedit "$ep.mkv" --edit info --set "title=$ep2" > /dev/null 2>&1 &
         done
 }
 
 # Restore file names
 function fix() {
-        echo " [ * ] Fixing files. This will take a while. (Nothing will be outputted to the screen unless set -x is uncommented)"
+        echo " [ * ] Fixing files. This will take a while."
         for ep in "${files_sorted[@]}"
         do
-                mv "$ep.mkv" "`dirname "$ep"`/`ffprobe "$ep".mkv |& grep "title" | cut -b 23- | head -n 1`.mkv"
+            echo "[ * ] `basename "$ep"`"
+            mv "$ep.mkv" "`dirname "$ep"`/`ffprobe "$ep".mkv |& grep "title" | cut -b 23- | head -n 1`.mkv"
         done
 }
 

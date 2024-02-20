@@ -10,3 +10,6 @@ AniDB scraper to rename files
 
 ## separate
 uses HandBrakeCLI to split a file on chapter markers
+
+## scanner
+Script to scan media folders and reencode everything that isn't AV1

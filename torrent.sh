@@ -3,9 +3,9 @@
 # This script is to rename files that are in my semi private torrent.
 # The hash will not be posted, don't ask me for it
 
-echo " [ * ] Please note, this script was made to migrate the torrent. If you're downloading for the first time, you do not need this."
-echo "       This script is also not usable with the perl version of rename, use the util-linux version instead."
-echo "       This script shouldn't miss any files. If it doesn, please message @46620 on discord."
+echo "[ * ] Please note, this script was made to migrate the torrent. If you're downloading for the first time, you do not need this."
+echo "      This script is also not usable with the perl version of rename, use the util-linux version instead."
+echo "      This script shouldn't miss any files. If it does, please message @46620 on discord."
 printf "%s " "Press enter to continue"
 read ans
 
@@ -23,7 +23,8 @@ mv "Kyoukai No Kanata/Specials/Kyoukai No Kanata Specials - 01 Shinonome.mkv" "K
 mv "Miru Tights/Specials/Miru Tights Specials - 01.mkv" "Miru Tights/Specials/Miru Tights Specials - S00E01 - Cosplay Shooting Tights.mkv"
 
 # 6474c5 to 04377e
-echo "[ * ] Nothing changed from 6474c5 to 04377e"
+echo "[ * ] 6474c5 to 04377e"
+echo "      Nothing changed."
 
 # 04377e to d5f4c0
 echo "[ * ] 04377e to d5f4c0"
@@ -57,3 +58,11 @@ rename -va "Zombieland Saga - S01" "Zombie Land Saga - S01" **
 rename -va "Zombie Land Saga - S02" "Zombie Land Saga Revenge - S02" **
 mv "Zombieland Saga" "Zombie Land Saga"
 rm "Pokemon/how many more temp files will Mia make"
+
+# d5f4c0 to 04377e
+echo "[ * ] d5f4c0 to 04377e"
+echo "      Nothing changed to my knowledge."
+
+# 04377e to 639c3c
+echo "[ * ] 04377e to 639c3c"
+echo "      Nothing changed to my knowledge."

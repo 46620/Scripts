@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script is meant for use with auto patching the PKGBUILD of linux-zen to add a KVM patch, and disable building kernel docs
+# This script is meant for use with auto patching the PKGBUILD of linux-lts to disable building kernel docs and build a smaller kernel
 
 sed -i 's@pkgbase=linux-lts@pkgbase=linux-lts-server@g' PKGBUILD
 sed -i 's@pkgname=("$pkgbase" "$pkgbase-headers" "$pkgbase-docs")@pkgname=("$pkgbase" "$pkgbase-headers")@g' PKGBUILD

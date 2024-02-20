@@ -27,7 +27,7 @@ then
     else
         echo " [ * ] Downloading and installing latest switch firmware (This can take around 10 minutes depending on your connection to the Internet Archive)"
         rm -rvf $YUZU_FIRMWARE/*.nca
-        curl --output -  -s -L https://archive.org/download/nintendo-switch-global-firmwares/Firmware%20$LATEST_FIRMWARE.zip | bsdtar -xvf - -C $YUZU_FIRMWARE
+        curl --output - -sL https://archive.org/download/nintendo-switch-global-firmwares/Firmware%20$LATEST_FIRMWARE.zip | bsdtar -xvf - -C $YUZU_FIRMWARE
         echo $LATEST_FIRMWARE > $YUZU_DIR/firmware.txt
     fi
 fi

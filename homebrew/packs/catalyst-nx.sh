@@ -22,9 +22,7 @@ function configs() {
     wget -qO bootloader/hekate_ipl.ini "https://suchmememanyskill.github.io/guides/Img/hekate_ipl.ini"
     wget -qO bootloader/patches.ini "https://suchmememanyskill.github.io/guides/Img/patches.ini"
     wget -O bootloader/bootlogo.bmp "https://cdn.discordapp.com/attachments/441119928334942218/939026586630512690/bootlogo.bmp"
-    wget -q "https://nh-server.github.io/switch-guide/files/bootlogos.zip"
-    unzip -q bootlogos.zip
-    rm bootlogos.zip
+    curl --output - -sL https://nh-server.github.io/switch-guide/files/bootlogos.zip | bsdtar -xvf -
 }
 
 function apps() {
