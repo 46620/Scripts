@@ -4,7 +4,7 @@
 # This script will attempt to be as easy to modify to fit your own needs, but don't expect it to be good.
 # Fuck you <3
 # Start date: 2024-02-09
-# Last Update: 2024-02-20
+# Last Update: 2024-02-29
 
 # Deps
 #
@@ -66,7 +66,7 @@ function encode() {
             then
                 continue # file is AV1, do nothing
             fi
-            ffprobe "$file" |& grep "Subtitles:" &> /dev/null # There has to be cleaner way to do this without a third check
+            ffprobe "$file" |& grep "Subtitle:" &> /dev/null # There has to be cleaner way to do this without a third check
             if [ $? -eq 0 ] # Subtitles
             then
                 HAS_SUBS=1 # Var to fix subs
