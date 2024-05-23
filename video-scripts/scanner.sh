@@ -74,7 +74,7 @@ function encode() {
                 HAS_SUBS=0 # It fucking errors if there's no subtitles
             fi
             echo "[ * ] $file"
-            du -hs "$file" >> $paths/source-size.log
+            du -hs "$file" >> "$paths/source-size.log"
             av1an -i "$file" -y --verbose --split-method "$AV1AN_SPLIT_METHOD" -m "$AV1AN_CHUNK_METHOD" -c "$AV1AN_CONCAT" -e "$AV1AN_ENC" --force -v "$AV1AN_VENC_OPTS" -a="$AV1AN_AENC_OPTS" --pix-format "$AV1AN_ENC_PIX" -f " $AV1AN_FFMPEG_OPTS " -x 240 -o "/tmp/`basename "${file%.*}"`.mkv"
             if [[ $HAS_SUBS -eq 1 ]]
             then
@@ -87,11 +87,11 @@ function encode() {
             then
                 echo "[ * ] File encoded with no issues, replacing now"
                 mv "/tmp/`basename "${file%.*}"`.mkv" "$file"
-                du -hs "$file" >> $paths/encode-size.log
+                du -hs "$file" >> "$paths/encode-size.log"
                 continue
             else
                 echo "[ * ] FILE CORRUPTED! NOT REPLACING"
-                echo "REVIEW $file" >> $paths/error.log
+                echo "REVIEW $file" >> "$paths/error.log"
             fi
         done
     done
