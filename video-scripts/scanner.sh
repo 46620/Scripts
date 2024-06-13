@@ -4,7 +4,7 @@
 # This script will attempt to be as easy to modify to fit your own needs, but don't expect it to be good.
 # Fuck you <3
 # Start date: 2024-02-09
-# Last Update: 2024-02-29
+# Last Update: 2024-05-22
 
 # Deps
 #
