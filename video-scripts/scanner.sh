@@ -78,14 +78,27 @@ function encode() {
             av1an -i "$file" -y --verbose --split-method "$AV1AN_SPLIT_METHOD" -m "$AV1AN_CHUNK_METHOD" -c "$AV1AN_CONCAT" -e "$AV1AN_ENC" --force -v "$AV1AN_VENC_OPTS" -a="$AV1AN_AENC_OPTS" --pix-format "$AV1AN_ENC_PIX" -f " $AV1AN_FFMPEG_OPTS " -x 240 -o "/tmp/`basename "${file%.*}"`.mkv"
             if [[ $HAS_SUBS -eq 1 ]]
             then
+                echo "[ * ] Adding Subtitles"
                 ffmpeg -i "$file" -i "/tmp/`basename "${file%.*}"`.mkv" -map 1:v -map 1:a -map 0:s -c:v copy -c:a copy -c:s copy -strict -2 "/tmp/`basename "${file%.*}"`-sub.mkv"
-                mv "/tmp/`basename "${file%.*}"`-sub.mkv" "/tmp/`basename "${file%.*}"`.mkv"
+                if [ $? -eq 1 ]
+                then
+                    "[ * ] SUBTITLES ISSUE??? POSSIBLY CODEC 94213 RELATED! ATTEMPTING TO CONVERT TO SRT"
+                    ffmpeg -y -i "$file" -i "/tmp/`basename "${file%.*}"`.mkv" -map 1:v -map 1:a -map 0:s -c:v copy -c:a copy -c:s srt -strict -2 "/tmp/`basename "${file%.*}"`-sub.mkv"
+                    if [ $? -eq 1 ]
+                    then
+                        echo "[ * ] SUBS ARE FUCKED! GOD IS DEAD! $file NO LONGER HAS SUBTITLES!" >> "$paths/subtitles.log"
+                    else
+                        mv "/tmp/`basename "${file%.*}"`-sub.mkv" "/tmp/`basename "${file%.*}"`.mkv"
+                    fi
+                else
+                    mv "/tmp/`basename "${file%.*}"`-sub.mkv" "/tmp/`basename "${file%.*}"`.mkv"
+                fi
             fi
             echo "[ * ] Checking for file corruption"
-            ffmpeg -v error -i "/tmp/`basename "${file%.*}"`.mkv" -f null -
+            ffmpeg -v error -i "/tmp/`basename "${file%.*}"`.mkv" -f null - # TODO: BUILD A LIGHT FFMPEG TO SPEED THIS STEP UP BY 6x
             if [ $? -eq 0 ]
             then
-                echo "[ * ] File encoded with no issues, replacing now"
+                echo "[ * ] File encoded, replacing now"
                 mv "/tmp/`basename "${file%.*}"`.mkv" "$file"
                 du -hs "$file" >> "$paths/encode-size.log"
                 continue
