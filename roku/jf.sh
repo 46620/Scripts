@@ -57,14 +57,18 @@ function build_jf(){
         cd ..
     fi
     ROKU_DEV_TARGET=$ROKU_IP ROKU_DEV_PASSWORD=$ROKU_PASS make install
-    echo " [ * ] Turning Roku off"
-    curl -m 1 -XPOST http://$ROKU_IP:8060/keypress/power # OH BUT THIS ONE FUCKING WORKS?
+}
+
+function power_off() {
+	echo " [ * ] Turning Roku off (Assumed user is asleep)"
+	curl -m 1 -XPOST http://$ROKU_IP:8060/keypress/power
 }
 
 function main(){
     vars
     check_power
     build_jf
+    #power_off # uncomment if you use this as automation
 }
 
 main
