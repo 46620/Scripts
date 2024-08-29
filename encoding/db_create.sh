@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version: 1.0
+# Version: 1.01
 
 # Start date 2024-07-30
 # Last Update 2024-08-29
@@ -48,7 +48,7 @@ function fill_db() {
     readarray -t files_sorted < <(printf '%s\n' "${files_array[@]}" | sort)
     for file in "${files_sorted[@]}"
     do
-        tracks=$(ffprobe "$file" |& grep -e "Video" -e "Audio" | wc -l) # If a file has both, it's safe to assume it's what we want.
+        tracks=$(ffprobe "$file" |& grep -e "Stream.*Video" -e "Stream.*Audio" | wc -l) # If a file has both, it's safe to assume it's what we want.
         if [ "$tracks" -lt 2 ]
         then
             echo " [ * ] $file missing either audio or video track. Skipping" # This can have false positives
