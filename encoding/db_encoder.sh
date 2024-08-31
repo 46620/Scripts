@@ -1,18 +1,11 @@
 #!/bin/bash
 
-# Version: 2.0
+# Version: 2.0.1
 
 # Fuck you and fuck my sanity <3
 # Start date:   2024-02-09
 # Last Rewrite: 2024-08-28
-# Last Update:  2024-08-29
-
-# Deps
-#
-# FFMPEG
-# mkvtoolnix
-# Av1an (and it's requirements)
-# sqlite3
+# Last Update:  2024-08-31
 
 # I got a shell checker :))
 # shellcheck disable=2164 # that fucking cd || exit shit
@@ -22,7 +15,7 @@ function pre_check() {
     trap ctrl_c INT
     if ! [ -f media.env ]
     then
-        echo "[  *] media.env not found, downloading example file"
+        echo "[  *] media.env not found, grabbing example."
         wget -O media.env "https://raw.githubusercontent.com/46620/Scripts/master/encoding/media.env.example"
     else
         source media.env
@@ -34,31 +27,24 @@ function pre_check() {
     fi
     if [ -d TOOLS ]
     then
-        echo " [*  ] TOOLS DIR FOUND! ADDING TO PATH"
+        echo " [*  ] TOOLS DIR FOUND! ADDING TO PATH!"
         PATH=$(pwd)/TOOLS:$PATH
     fi
 }
 
 function var_check() {
-    if ! [[ $media_env_check = true ]]
-    then
-        echo " [  *] PLEASE CHECK THE ENV FILE AND READ THIS SCRIPT!"
-        exit 1
-    fi
-
     if [ -f "$LOCKDIR/$ENCODER_LOCKFILE" ]
     then
-        echo " [  *] LOCKFILE FOUND, ENCODER IS POSSIBLY RUNNING! IF IT'S NOT RUNNING PLEASE DELETE $LOCKDIR/$ENCODER_LOCKFILE"
+        echo " [  *] LOCKFILE FOUND, ENCODER IS POSSIBLY RUNNING! IF IT'S NOT RUNNING PLEASE DELETE $LOCKDIR/$ENCODER_LOCKFILE!"
         exit 1
     fi
 }
 
 function encode() {
     echo " [*  ] Encoding"
-    mkdir -p "$LOCKDIR"
-    touch "$LOCKDIR/$ENCODER_LOCKFILE"
+    mkdir -p "$LOCKDIR";touch "$LOCKDIR/$ENCODER_LOCKFILE"
     cd "$MEDIA_ROOT"
-    touch {source-size,encode-size,error,subtitle}.log
+    touch {source-size,encode-size,error,subtitle}.log # Comment this out if you do the data logging yourself or don't care and want less files
     readarray encode_these < <(sqlite3 "$DB_PATH/$DATABASE_NAME".db "SELECT * FROM $ENCTABLE_NAME")
     for file in "${encode_these[@]}"
     do
@@ -98,8 +84,8 @@ function encode() {
             echo " [*  ] File encoded, replacing now"
             mv "/tmp/$(basename "${file%.*}").mkv" "$file"
             mv "$file" "${file%.*}".mkv &> /dev/null # Forces file to be mkv, there isn't any issue if it's already mkv
-            du -hs "$file" >> "$MEDIA_ROOT/encode-size.log"
-            echo " [*  ] Removing file from database"s
+            du -hs "${file%.*}".mkv >> "$MEDIA_ROOT/encode-size.log"
+            echo " [*  ] Removing file from database"
             file_escaped=$(echo "$file" | sed "s/'/''/g")
             sqlite3 "$DB_PATH/$DATABASE_NAME".db "DELETE FROM $ENCTABLE_NAME WHERE file = '$file_escaped'"
             continue

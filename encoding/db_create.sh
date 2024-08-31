@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Version: 1.01
+# Version: 1.0.1
 
 # Start date 2024-07-30
-# Last Update 2024-08-29
+# Last Update 2024-08-31
 
 # I got a shell checker :))
 # shellcheck disable=2164 # that fucking cd || exit shit
@@ -27,13 +27,8 @@ function vars() {
 }
 
 function create_db() {
-    if ! [ -f "$DB_PATH/$DATABASE_NAME".db ]
-    then
-        echo " [ * ] DB does not exist, creating"
-        sqlite3 "$DB_PATH/$DATABASE_NAME".db "CREATE TABLE IF NOT EXISTS $ENCTABLE_NAME (file TEXT NOT NULL);"
-    else
-        echo " [ * ] DB already created"
-    fi
+    echo " [ * ] Making sure database exists."
+    sqlite3 "$DB_PATH/$DATABASE_NAME".db "CREATE TABLE IF NOT EXISTS $ENCTABLE_NAME (file TEXT NOT NULL);"
 }
 
 function fill_db() {
