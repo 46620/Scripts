@@ -7,7 +7,7 @@ echo "[ * ] Please note, this script was made to migrate the torrent. If you're 
 echo "      This script is also not usable with the perl version of rename, use the util-linux version instead."
 echo "      This script shouldn't miss any files. If it does, please message @46620 on discord."
 printf "%s " "Press enter to continue"
-read ans
+read -r
 
 # 10c3fd to 6474c5
 echo "[ * ] 10c3fd to 6474c5"
@@ -65,4 +65,8 @@ echo "      Nothing changed to my knowledge."
 
 # 04377e to 639c3c
 echo "[ * ] 04377e to 639c3c"
+echo "      Nothing changed to my knowledge."
+
+# 639c3c to e5af9c
+echo "[ * ] 639c3c to e5af9c"
 echo "      Nothing changed to my knowledge."
