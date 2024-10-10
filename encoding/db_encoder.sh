@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Version: 2.0.1
+# Version: 2.0.2
 
 # Fuck you and fuck my sanity <3
 # Start date:   2024-02-09
 # Last Rewrite: 2024-08-28
-# Last Update:  2024-08-31
+# Last Update:  2024-10-10
 
 # I got a shell checker :))
-# shellcheck disable=2164 # that fucking cd || exit shit
+# shellcheck disable=2164 # that fucking "cd || exit" shit that I hate
 # shellcheck disable=2317 # Unused code (trap ctrl_c screamed)
 
 function pre_check() {
@@ -16,7 +16,8 @@ function pre_check() {
     if ! [ -f media.env ]
     then
         echo "[  *] media.env not found, grabbing example."
-        wget -O media.env "https://raw.githubusercontent.com/46620/Scripts/master/encoding/media.env.example"
+        wget -O media.env.example "https://raw.githubusercontent.com/46620/Scripts/master/encoding/media.env.example"
+        exit 1
     else
         source media.env
     fi
@@ -78,7 +79,7 @@ function encode() {
             fi
         fi
         echo " [*  ] Checking for file corruption"
-        ffmpeg -v error -i "/tmp/$(basename "${file%.*}").mkv" -f null - # TODO: build a light ffmpeg to speed this step up. might cause issues with av1an so name it ffmpeg2 or some shit
+        ffmpeg -v error -i "/tmp/$(basename "${file%.*}").mkv" -f null - # TODO: build a light ffmpeg to speed this step up. might cause issues with av1an so name it ffmpreg or some shit
         if [ $? -eq 0 ]
         then
             echo " [*  ] File encoded, replacing now"
