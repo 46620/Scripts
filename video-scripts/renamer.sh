@@ -1,89 +1,209 @@
 #!/bin/bash
 
-echo " [ * ] THIS SCRIPT HAS ONLY EVER BEEN TESTED ON ONE PIECE AND NOTHING ELSE! I DO NOT TRUST THIS TO WORK ON ANYTHING ELSE"
+# set -x
 
-# This is the worst script I have ever made, unironically nothing can compare to this.
-# And no, I will not clean this up or make it look better, ask me later.
+# Script name: anime-helper.sh
+# Desc: Anidb metadata agent written in bash
+# Date: 2023-10-30
+# Mod : 2025-01-26
 
-# SET THESE VARIABLES WITH YOUR OWN USER AGENT AND SOCKS5 PROXY!
-readonly USER_AGENT= # open a browser console and type navigator.useragent
-readonly SOCKS5= # ip:port
+# I got a shell checker :))
+# shellcheck disable=2164 # that fucking "cd || exit" shit that I hate
 
-if [[ -z $USER_AGENT ]]
-then
-    echo " [ * ] PLEASE EDIT THE SCRIPT TO SUPPLY A USER AGENT AND A SOCKS5 PROXY"
-    exit 1
-fi
+function usage() {
+    local program_name
+    program_name=${0##*/}
+    cat <<EOF
+$program_name v0.0.1-legit
+Usage: $program_name <-i /path/to/show> <-n #> <-s ##>
+Options:
+    -h               Prints this message
+    -d               Install dependencies
+    -i               Season path
+    -n               AniDB ID of the show (currently we don't autodetect that)
+    -s               Season number. Please pad (eg: 01, 02)
 
-if [[ -z $SOCKS5 ]]
-then
-    echo " [ * ] PLEASE EDIT THE SCRIPT TO SUPPLY A USER AGENT AND A SOCKS5 PROXY"
-    exit 1
-fi
+Note: Currently this is only meant for one season at a time, please do not try to use it against your entire library.
+EOF
+}
 
-# Checks to make sure that variables are correct
-numbers='^[0-9]+$'
 
-if ! [[ -d $1 ]] ; then
-    echo "Show path is not a folder"
-    exit 1
-fi
+function install_deps() { # Do this last
+    echo " [ * ] Installing dependencies"
+    if [ -x "$(command -v pacman)" ]
+    then
+        sudo pacman -S curl bc mkvtoolnix-cli xmlstarlet
+    elif [ -x "$(command -v apk)" ]
+    then
+        sudo apk add curl bc mkvtoolnix xmlstarlet
+    elif [ -x "$(command -v apt)" ]
+    then
+        sudo apt install curl bc mkvtoolnix xmlstarlet
+    elif [ -x "$(command -v dnf)" ]
+    then
+        echo " [  *] Sorry, I don't support Fedora currently."
+    fi
+    echo " [*  ] Dependencies installed! Please rerun the script without -d to actually use it."
+    # TODO: FIND A CLEAN WAY TO DO THIS
+    # curl
+    # bc
+    # mkvtoolnix-cli
+    # xmlstarlet
+}
 
-if ! [[ $2 =~ $numbers ]] ; then
-    echo "Show ID is not a number"
-    exit 1
-fi
+function vars() {
+    # You may be thinking: Mia, why is this a function? Well first, why the fuck are you thinking that? Second, fuck you, my code :3
+    echo " [*  ] Setting variables"
+    readonly CLIENT_NAME=farris # anidb client
+    readonly CLIENT_VER=1 # anidb client version
+    readonly CACHE="$HOME/.local/share/46620/anime-helper/cache/"
+    readonly META_URL_BASE="http://api.anidb.net:9001/httpapi?client=$CLIENT_NAME&clientver=$CLIENT_VER&protover=1&request=anime&aid="
+    readonly IMG_URL_BASE="https://cdn-us.anidb.net/images/main/"
+    COUNTER=0 # This is used way later in the script, I just need it set to zero somewhere before the for loop uses it
+}
 
-# This is to just make the variables look cleaner in the actual commands
-SHOW_PATH="$1" # For the LOVE OF FUCK clean your folder names
-ANIME_ID=$2 # This can technically be automated by using $SHOW_PATH, but since I don't wanna dig out my anidb database parser, I am not doing that
-EPISODE_COUNT=$((`ls "$SHOW_PATH" | wc -l`-1))
-EPISODE_COUNT_FIXED=`echo $((10#$EPISODE_COUNT+1))`
-if ! [[ -z $4 ]] ; then
-    SEASON_NUMBER=$4
-else
-    SEASON_NUMBER=01
-fi
+function cache() {
+    # This is to prevent a ban from anidb, because they're mean ):
+    echo " [*  ] Checking Cache"
+    mkdir -p "$CACHE/$SHOW_ID" # It's quicker to make the dir every time, so fuck you
+    LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
+    if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi # If the file doesn't exist, set 0 to force update
+    if [ "$(echo "$(date +%s)"-"$LAST_MODIFIED" | bc)" -lt "86400" ]
+    then
+        echo " [*  ] Cache is new enough, not updating"
+    else
+        echo " [ * ] Updating cache"
+        curl -sH 'Accept-encoding: gzip' "$META_URL_BASE$SHOW_ID" | gunzip - > "$CACHE/$SHOW_ID/data.xml"
+        wget -qO "$CACHE/$SHOW_ID/cover.jpg" $IMG_URL_BASE"$(xmlstarlet sel -t -v '//picture' "$CACHE"/"$SHOW_ID"/data.xml | head -1)"
+        echo " [*  ] Cache updated"
+    fi
+}
 
-# Grab the show information
-echo " [ * ] Cleaning up any old script files"
-rm -rf /tmp/46620/tmp_show
-mkdir -p /tmp/46620/tmp_show
-echo " [ * ] Downloading metadata"
-curl -o /tmp/46620/tmp_show/show_page --user-agent -k -x "$USER_AGENT" -k -x socks5h://$SOCKS5 https://anidb.net/anime/$ANIME_ID
-echo " [ * ] Ripping episode names, please wait a moment"
-SHOW_NAME=`cat /tmp/46620/tmp_show/show_page | grep 'class="anime"' | tail -n1 | cut -b 28- | rev | cut -b 6- | rev`
-cat /tmp/46620/tmp_show/show_page | grep "title name episode" -A 2 | sed 's/^.*\(itemprop="name".*\).*$/\1/' | cut -b 17- | sed '1~2d' | sed '/^$/d' | head -n 1059 > /tmp/46620/tmp_show/ep_name
-sed -i sed "s@\`@'@g" /tmp/46620/tmp_show/ep_name
-readarray -t ep_name < /tmp/46620/tmp_show/ep_name
-cd "$SHOW_PATH"
+function parse() {
+    # This function is mostly done by ChatGPT, as I do not understand xmlstarlet at all
+    echo " [*  ] Parsing xml"
 
-# Until I figure out 2 arrays at once, first pass sets episode numbers, second will do names
-echo " [ * ] Setting episode numbers"
-readarray -d '' files_array < <(find . -name "*.mkv");
-IFS=$'\n' files_sorted=($(sort <<<"${files_array[*]}"))
-unset IFS
+    echo " [*  ] Getting episode count" # This also silently sets up padding
+    EPISODE_COUNT=$(xmlstarlet sel -t -v '//episodecount' "$CACHE"/"$SHOW_ID"/data.xml)
 
-for episode in `seq -w 0 $EPISODE_COUNT`
-do
-    episode2=`echo $((10#$episode+1))`
-    episode3=`expr length $episode2`
-    episode4=`echo $(($(expr length $EPISODE_COUNT_FIXED)-$episode3))`
-    episode5=`head -c $episode4 /dev/zero | tr '\0' '0'`
-    mv -v "${files_sorted[10#$episode]}" "$SHOW_NAME - S`echo $SEASON_NUMBER`E$episode5$((10#$episode+1)).mkv"
-done
+    echo " [*  ] Getting episode names"
+    EPISODE_NAMES=()
+    while IFS= read -r line; do
+        EPISODE_NAMES+=("$line")
+    done < <(xmlstarlet sel -t -m '//episode/epno[@type="1"]' -v "format-number(., '0000')" -o ' ' -v '../title[@xml:lang="en"]' -n "$CACHE/$SHOW_ID/data.xml" | sort | cut -b 6- | sed "s@\`@'@g")
 
-echo " [ * ] Setting episode names"
+    echo " [*  ] Getting air dates"
+    AIR_DATE=()
+    while IFS= read -r line; do
+        AIR_DATE+=("$line")
+    done < <(xmlstarlet sel -t -m '//episode/epno[@type="1"]' -v "format-number(., '0000')" -o ' ' -v '../airdate' -n "$CACHE/$SHOW_ID/data.xml" | sort | cut -b 6- | sed "s@\`@'@g")
 
-readarray -d '' files_array < <(find . -name "*.mkv"| sed 's@.mkv@@g');
-IFS=$'\n' files_sorted=($(sort <<<"${files_array[*]}"))
-unset IFS
+    echo " [*  ] Getting Show name"
+    SHOW_NAME=$(xmlstarlet sel -t -v '//title[@type="main"]' "$CACHE"/"$SHOW_ID"/data.xml)
 
-for episode in `seq -w 0 $EPISODE_COUNT`
-do
-    mv -v "${files_sorted[10#$episode]}.mkv" "${files_sorted[10#$episode]} - ${ep_name[10#$episode]}.mkv"
-done
+    # The example uses One Piece numbers, but this will work with any padding
+    # The long xmlstarlet command grabs any episode name that is marked as type 1 (a real episode) with the episode number in front of it
+    # padded out to 0001-1000, then sorts them so the episodes are in the correct order (some shows have them out of order, don't ask why)
+    # Then we cut the episode numbers off to leave us with just the names in order, and then we change all back ticks to single quotes,
+    # to match every sane fucking naming method. It's terrible, it shouldn't exist, ChatGPT literally wrote the ENTIRE xmlstarlet part because
+    # I could not figure it out. :3
+}
 
-# Deps
+function build_array() {
+    # I didn't wanna rewrite this code so shutup
+    readarray -d '' episodes_array < <(find "$SHOW_PATH" -mindepth 1 -maxdepth 1 -type f -print0)
+    readarray -t episodes_sorted < <(printf '%s\n' "${episodes_array[@]}" | sort)
+}
 
-# curl
+function rename() {
+    # This code will throw a lot of "cannot stat ''" warnings if you have less episodes than what has aired.
+    echo " [*  ] Quickly building episode array" # I didn't know where else to put this code :3
+    build_array
+
+    echo " [*  ] Renaming episodes"
+    for EPISODE in $(seq -w 0 "$EPISODE_COUNT")
+    do
+        EPISODE_NUM=$(( 10#$EPISODE+1 )) # Bash starts at 0, shows start at 1, I need them to match
+        EPISODE_NUM_LEN=${#EPISODE_NUM} # This is to deal with padding below
+        PADDING_REQ=$(($( echo ${#EPISODE_COUNT}-"$EPISODE_NUM_LEN" | bc))) # Subtract len of episodes by len of the current episode number
+        PADDING=$(head -c "$PADDING_REQ" /dev/zero | tr '\0' '0') # Create the zeros for padding
+        mv -v "${episodes_sorted[10#$EPISODE]}" "$SHOW_PATH"/"$SHOW_NAME"\ -\ S"$SEASON_NUMBER"E"$PADDING""$EPISODE_NUM"\ -\ "${EPISODE_NAMES[10#$EPISODE]}".mkv # Renname the episodes
+    done
+}
+
+function metadata() {
+    # This function is braindead but it works
+    echo " [*  ] Embedding episode names"
+    build_array # The files are different, we need to rebuild the arrays
+    for EPISODE in "${episodes_sorted[@]}"
+    do   
+        EPISODE_BASE=$(basename "$EPISODE")
+        echo " [*  ] $EPISODE_BASE"
+        mkvpropedit "$EPISODE" --edit info \
+                               --set "title=${EPISODE_BASE%.*}" \
+                               --set "date=${AIR_DATE[$COUNTER]}T00:00:00+00:00" \
+                               --attachment-name "cover" --attachment-mime-type "image/jpeg" --add-attachment "$CACHE"/"$SHOW_ID"/cover.jpg > /dev/null 2>&1
+        COUNTER=$((COUNTER+1))
+    done
+}
+
+function main() {
+    vars
+    cache
+    parse
+    rename
+    metadata
+}
+
+function prep() {
+    if [ $# -eq 0 ];then usage;exit 1;fi
+    while getopts ":i:n:s:dh" prep
+    do
+        case $prep in
+            i)
+                if [ -d "$OPTARG" ]
+                then
+                    SHOW_PATH="$OPTARG"
+                else
+                    usage
+                fi
+                ;;
+            n)
+                numbers='^[0-9]+$'
+                if ! [[ $OPTARG =~ $numbers ]]
+                then
+                    usage
+                else
+                    SHOW_ID="$OPTARG"
+                fi
+                ;;
+            s)
+                numbers='^[0-9]+$'
+                if ! [[ $OPTARG =~ $numbers ]]
+                then
+                    usage
+                else
+                    SEASON_NUMBER="$OPTARG"
+                fi
+                ;;
+            d)
+                install_deps
+                ;;
+            h|\?|:|*)
+                usage
+                exit 0
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    if [ -z "$SHOW_PATH" ] || [ -z "$SHOW_ID" ]; then
+        usage
+    fi
+    main
+}
+
+# SHOW_PATH=i
+# SHOW_ID=n
+# SEASON=s
+
+prep "$@"
