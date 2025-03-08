@@ -1,14 +1,11 @@
 #!/bin/bash
 
-# Version: 2.0.2
+# Version: 20250308
 
-# Fuck you and fuck my sanity <3
 # Start date:   2024-02-09
 # Last Rewrite: 2024-08-28
-# Last Update:  2024-10-10
 
-# I got a shell checker :))
-# shellcheck disable=2164 # that fucking "cd || exit" shit that I hate
+# shellcheck disable=2164 # that "cd || exit" thing that I hate
 # shellcheck disable=2317 # Unused code (trap ctrl_c screamed)
 
 function pre_check() {
@@ -17,13 +14,14 @@ function pre_check() {
     then
         echo "[  *] media.env not found, grabbing example."
         wget -O media.env.example "https://raw.githubusercontent.com/46620/Scripts/master/encoding/media.env.example"
+        echo "[ * ] please edit media.env and then restart the script."
         exit 1
     else
         source media.env
     fi
     if ! [ -f "$DB_PATH/$DATABASE_NAME".db ]
     then
-        echo " [  *] DATABASE IS MISSING! PLEASE RUN THE CREATE SCRIPT!"
+        echo " [  *] DATABASE IS MISSING! PLEASE RUN THE CREATE SCRIPT!" # TODO: RUN DB_CREATE INSTEAD OF ERRORING!
         exit 1
     fi
     if [ -d TOOLS ]
@@ -45,11 +43,12 @@ function encode() {
     echo " [*  ] Encoding"
     mkdir -p "$LOCKDIR";touch "$LOCKDIR/$ENCODER_LOCKFILE"
     cd "$MEDIA_ROOT"
-    touch {source-size,encode-size,error,subtitle}.log # Comment this out if you do the data logging yourself or don't care and want less files
+    mkdir -p "$MEDIA_ROOT/.encode_temp" # 20250308: finally adding something to speed up resume encodes
+    touch {source-size,encode-size,error,subtitle}.log
     readarray encode_these < <(sqlite3 "$DB_PATH/$DATABASE_NAME".db "SELECT * FROM $ENCTABLE_NAME")
     for file in "${encode_these[@]}"
     do
-        file=$(echo "$file" | head -n1) # don't ask why I added this hacky fucking workaround, I do not know either but it makes it work. fucking retarded ass shell language I need to learn go
+        file=$(echo "$file" | head -n1) # The way I grab file names caused a newline after every file name, this fixes it
         ffprobe "$file" |& grep "Subtitle:" &> /dev/null
         if [ $? -eq 0 ] # Subtitles
         then
@@ -59,18 +58,18 @@ function encode() {
         fi
         echo " [*  ] $file"
         du -hs "$file" >> "$MEDIA_ROOT/source-size.log"
-        av1an -i "$file" -y --verbose --split-method "$AV1AN_SPLIT_METHOD" -m "$AV1AN_CHUNK_METHOD" -c "$AV1AN_CONCAT" -e "$AV1AN_ENC" --force -v "$AV1AN_VENC_OPTS" -a="$AV1AN_AENC_OPTS" --pix-format "$AV1AN_ENC_PIX" -f " $AV1AN_FFMPEG_OPTS " -x 240 -o "/tmp/$(basename "${file%.*}").mkv"
+        av1an -i "$file" -y -r --temp "$MEDIA_ROOT/.encode_temp/$(basename "${file%.*}")" --verbose --split-method "$AV1AN_SPLIT_METHOD" -m "$AV1AN_CHUNK_METHOD" -c "$AV1AN_CONCAT" -e "$AV1AN_ENC" --force -v "$AV1AN_VENC_OPTS" -a="$AV1AN_AENC_OPTS" --pix-format "$AV1AN_ENC_PIX" -f " $AV1AN_FFMPEG_OPTS " -x 240 -o "/tmp/$(basename "${file%.*}").mkv"
         if [[ $HAS_SUBS -eq 1 ]]
         then
             echo " [*  ] Adding Subtitles"
-            ffmpeg -i "$file" -i "/tmp/$(basename "${file%.*}").mkv" -map 1:v -map 1:a -map 0:s -c:v copy -c:a copy -c:s copy -strict -2 "/tmp/`basename "${file%.*}"`-sub.mkv" &> /dev/null
+            ffmpeg -i "$file" -i "/tmp/$(basename "${file%.*}").mkv" -map 1:v -map 1:a -map 0:s -c:v copy -c:a copy -c:s copy -strict -2 "/tmp/$(basename "${file%.*}")-sub.mkv" &> /dev/null
             if [ $? -eq 1 ]
             then
                 echo " [ * ] SUBTITLES ISSUE??? POSSIBLY CODEC 94213 RELATED! ATTEMPTING TO CONVERT TO SRT"
-                ffmpeg -y -i "$file" -i "/tmp/$(basename "${file%.*}").mkv" -map 1:v -map 1:a -map 0:s -c:v copy -c:a copy -c:s srt -strict -2 "/tmp/`basename "${file%.*}"`-sub.mkv" &> /dev/null
+                ffmpeg -y -i "$file" -i "/tmp/$(basename "${file%.*}").mkv" -map 1:v -map 1:a -map 0:s -c:v copy -c:a copy -c:s srt -strict -2 "/tmp/$(basename "${file%.*}")-sub.mkv" &> /dev/null
                 if [ $? -eq 1 ]
                 then
-                    echo " [  *] SUBS ARE FUCKED! GOD IS DEAD! $file NO LONGER HAS SUBTITLES!" >> "$MEDIA_ROOT/subtitles.log"
+                    echo " [  *] SUBS ARE COOKED! $file NO LONGER HAS SUBTITLES!" >> "$MEDIA_ROOT/subtitles.log"
                 else
                     mv "/tmp/$(basename "${file%.*}")-sub.mkv" "/tmp/$(basename "${file%.*}").mkv"
                 fi
@@ -79,7 +78,7 @@ function encode() {
             fi
         fi
         echo " [*  ] Checking for file corruption"
-        ffmpeg -v error -i "/tmp/$(basename "${file%.*}").mkv" -f null - # TODO: build a light ffmpeg to speed this step up. might cause issues with av1an so name it ffmpreg or some shit
+        ffmpeg -v error -i "/tmp/$(basename "${file%.*}").mkv" -f null - # TODO: build a light ffmpeg to speed this step up. might cause issues with av1an so name it ffmpreg or something
         if [ $? -eq 0 ]
         then
             echo " [*  ] File encoded, replacing now"
@@ -87,13 +86,15 @@ function encode() {
             mv "$file" "${file%.*}".mkv &> /dev/null # Forces file to be mkv, there isn't any issue if it's already mkv
             du -hs "${file%.*}".mkv >> "$MEDIA_ROOT/encode-size.log"
             echo " [*  ] Removing file from database"
-            file_escaped=$(echo "$file" | sed "s/'/''/g")
+            file_escaped=$(echo "$file" | sed "s/'/''/g") # can't do ${var//foo/bar} for some reason
             sqlite3 "$DB_PATH/$DATABASE_NAME".db "DELETE FROM $ENCTABLE_NAME WHERE file = '$file_escaped'"
             continue
         else
             echo " [  *] FILE CORRUPTED! NOT REPLACING"
             echo "REVIEW $file" >> "$MEDIA_ROOT/error.log"
         fi
+        echo " [*  ] Clearing encode cache"
+        rm -rf "$MEDIA_ROOT/.encode_temp/$(basename "${file%.*}")"
     done
 }
 
@@ -101,15 +102,13 @@ function cleanup() {
     echo " [*  ] All files now encoded. Please check logs for any issues."
     echo " [*  ] Cleaning up script"
     cd "$MEDIA_ROOT"
-    rm -rf .*
+    rm -rf "$MEDIA_ROOT/.encode_temp"
     rm "$LOCKDIR/$ENCODER_LOCKFILE"
-    exit
+    exit 0
 }
 
 function ctrl_c() {
-    echo " [  *] USER EXITING SCRIPT! RUN MASS CLEANUP JOB!"
-    cd "$MEDIA_ROOT"
-    rm -rf .*
+    echo " [  *] USER EXITING SCRIPT! CLEARING LOCK!"
     rm "$LOCKDIR/$ENCODER_LOCKFILE"
     exit 1
 }
