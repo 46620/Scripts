@@ -47,7 +47,7 @@ function install_deps() {
     exit 0
 }
 
-function vars() { # You may be thinking: Mia, why is this a function? Well first, why the fuck are you thinking that? Second, fuck you, my code :3
+function vars() {
     echo " [*  ] Setting variables"
     readonly CLIENT_NAME=farris # anidb client
     readonly CLIENT_VER=1 # anidb client version
@@ -60,7 +60,7 @@ function vars() { # You may be thinking: Mia, why is this a function? Well first
 # This is to prevent a ban from anidb, as their API is a bit strict
 function cache() {
     echo " [*  ] Checking Cache"
-    mkdir -p "$CACHE/$SHOW_ID" # It's quicker to make the dir every time, so fuck you
+    mkdir -p "$CACHE/$SHOW_ID" # It's quicker to make the dir every time
     LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
     if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi # If the file doesn't exist, set 0 to force update
     if [ "$(echo "$(date +%s)"-"$LAST_MODIFIED" | bc)" -lt "86400" ]
@@ -100,7 +100,7 @@ function parse() {
     # The long xmlstarlet command grabs any episode name that is marked as type 1 (a real episode) with the episode number in front of it
     # padded out to 0001-1000, then sorts them so the episodes are in the correct order (some shows have them out of order, don't ask why)
     # Then we cut the episode numbers off to leave us with just the names in order, and then we change all back ticks to single quotes,
-    # to match every sane fucking naming method. It's terrible, it shouldn't exist, ChatGPT literally wrote the ENTIRE xmlstarlet part because
+    # to match every sane naming method. It's terrible, it shouldn't exist, ChatGPT literally wrote the ENTIRE xmlstarlet part because
     # I could not figure it out. :3
 }
 
