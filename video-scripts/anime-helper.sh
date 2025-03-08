@@ -4,31 +4,26 @@
 
 # Script name: anime-helper.sh
 # Desc: Anidb metadata agent written in bash
-# Date: 2023-10-30
-# Mod : 2025-01-26
-
-# I got a shell checker :))
-# shellcheck disable=2164 # that fucking "cd || exit" shit that I hate
+# Start Date: 2023-10-30
 
 function usage() {
     local program_name
     program_name=${0##*/}
     cat <<EOF
-$program_name v0.0.1-legit
+$program_name v20250308
 Usage: $program_name <-i /path/to/show> <-n #> <-s ##>
 Options:
     -h               Prints this message
     -d               Install dependencies
     -i               Season path
-    -n               AniDB ID of the show (currently we don't autodetect that)
+    -n               AniDB ID of the show
     -s               Season number. Please pad (eg: 01, 02)
 
 Note: Currently this is only meant for one season at a time, please do not try to use it against your entire library.
 EOF
 }
 
-
-function install_deps() { # Do this last
+function install_deps() {
     echo " [ * ] Installing dependencies"
     if [ -x "$(command -v pacman)" ]
     then
@@ -41,18 +36,18 @@ function install_deps() { # Do this last
         sudo apt install curl bc mkvtoolnix xmlstarlet
     elif [ -x "$(command -v dnf)" ]
     then
-        echo " [  *] Sorry, I don't support Fedora currently."
+        sudo dnf install curl bc mkvtoolnix xmlstarlet
+    elif [ -x "$(command -v zypper)" ]
+    then
+        sudo zypper install curl bc mkvtoolnix xmlstarlet 
+    else
+        echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
     fi
     echo " [*  ] Dependencies installed! Please rerun the script without -d to actually use it."
-    # TODO: FIND A CLEAN WAY TO DO THIS
-    # curl
-    # bc
-    # mkvtoolnix-cli
-    # xmlstarlet
+    exit 0
 }
 
-function vars() {
-    # You may be thinking: Mia, why is this a function? Well first, why the fuck are you thinking that? Second, fuck you, my code :3
+function vars() { # You may be thinking: Mia, why is this a function? Well first, why the fuck are you thinking that? Second, fuck you, my code :3
     echo " [*  ] Setting variables"
     readonly CLIENT_NAME=farris # anidb client
     readonly CLIENT_VER=1 # anidb client version
@@ -62,8 +57,8 @@ function vars() {
     COUNTER=0 # This is used way later in the script, I just need it set to zero somewhere before the for loop uses it
 }
 
+# This is to prevent a ban from anidb, as their API is a bit strict
 function cache() {
-    # This is to prevent a ban from anidb, because they're mean ):
     echo " [*  ] Checking Cache"
     mkdir -p "$CACHE/$SHOW_ID" # It's quicker to make the dir every time, so fuck you
     LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
@@ -83,7 +78,7 @@ function parse() {
     # This function is mostly done by ChatGPT, as I do not understand xmlstarlet at all
     echo " [*  ] Parsing xml"
 
-    echo " [*  ] Getting episode count" # This also silently sets up padding
+    echo " [*  ] Getting episode count"
     EPISODE_COUNT=$(xmlstarlet sel -t -v '//episodecount' "$CACHE"/"$SHOW_ID"/data.xml)
 
     echo " [*  ] Getting episode names"
@@ -145,6 +140,7 @@ function metadata() {
                                --attachment-name "cover" --attachment-mime-type "image/jpeg" --add-attachment "$CACHE"/"$SHOW_ID"/cover.jpg > /dev/null 2>&1
         COUNTER=$((COUNTER+1))
     done
+    # TODO: Find out if another metadata source has air times and add to the time above
 }
 
 function main() {
@@ -174,7 +170,7 @@ function prep() {
                 then
                     usage
                 else
-                    SHOW_ID="$OPTARG"
+                    SHOW_ID="$OPTARG" # TODO: Work on show name parser to make this step optional
                 fi
                 ;;
             s)
