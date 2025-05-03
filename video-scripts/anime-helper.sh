@@ -10,7 +10,7 @@ function usage() {
     local program_name
     program_name=${0##*/}
     cat <<EOF
-$program_name v20250308
+$program_name v20250502
 Usage: $program_name <-i /path/to/show> <-n #> <-s ##>
 Options:
     -h               Prints this message
@@ -27,19 +27,19 @@ function install_deps() {
     echo " [ * ] Installing dependencies"
     if [ -x "$(command -v pacman)" ]
     then
-        sudo pacman -S curl bc mkvtoolnix-cli xmlstarlet
+        sudo pacman -S wget curl bc mkvtoolnix-cli xmlstarlet
     elif [ -x "$(command -v apk)" ]
     then
-        sudo apk add curl bc mkvtoolnix xmlstarlet
+        sudo apk add wget curl bc mkvtoolnix xmlstarlet
     elif [ -x "$(command -v apt)" ]
     then
-        sudo apt install curl bc mkvtoolnix xmlstarlet
+        sudo apt install wget curl bc mkvtoolnix xmlstarlet
     elif [ -x "$(command -v dnf)" ]
     then
-        sudo dnf install curl bc mkvtoolnix xmlstarlet
+        sudo dnf install wget curl bc mkvtoolnix xmlstarlet
     elif [ -x "$(command -v zypper)" ]
     then
-        sudo zypper install curl bc mkvtoolnix xmlstarlet 
+        sudo zypper install curl bc mkvtoolnix xmlstarlet
     else
         echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
     fi
@@ -54,16 +54,39 @@ function vars() {
     readonly CACHE="$HOME/.local/share/46620/anime-helper/cache/"
     readonly META_URL_BASE="http://api.anidb.net:9001/httpapi?client=$CLIENT_NAME&clientver=$CLIENT_VER&protover=1&request=anime&aid="
     readonly IMG_URL_BASE="https://cdn-us.anidb.net/images/main/"
+    CURRENT_TIME=$(date +%s)
     COUNTER=0 # This is used way later in the script, I just need it set to zero somewhere before the for loop uses it
 }
 
-# This is to prevent a ban from anidb, as their API is a bit strict
+# This is to try to prevent a ban from anidb, as their API is very strict
 function cache() {
+    echo " [*  ] Checking API limit" # 2025-05-02 I found out anidb has a 15/something API limit, so I am now taking that into account. I forgot about their "Anti Leech Protection"
+    CURRENT_API_USAGE=$(cat "$CACHE/api-limiter")
+    if [ $? -eq 1 ]; then CURRENT_API_USAGE=0; fi # If the file doesn't exist, set 0
+    if [ "$CURRENT_API_USAGE" -lt "15" ] # 15 appears to be the limit in a set time frame. IDK the time frame yet, hopefully it's not a "if you hit this you're cooked forever type situation". We set the limit technically at 14 in this script to possibly mitigate a ban risk below.
+    then
+        echo " [*  ] API limit not reached yet"
+        CURRENT_API_USAGE=$((CURRENT_API_USAGE+1)) # Up the counter to keep track
+        echo "$CURRENT_API_USAGE" > "$CACHE/api-limiter"
+    else
+        echo " [ * ] Checking if it's safe to contact AniDB"
+        TIME_SINCE_FIRST_API_CALL=$(stat -c %W "$CACHE/api-limiter") # Check time the file was created, this would line up with the first API call made. This has several flaws. First being if the user does 1 call and then 23 hours and 59 minutes later does 15 more, there is a chance they will get banned. Second is that we should do this before checking if the limit has been hit. Third being none of this was tested because I got banned before this code was written and currently can't test.
+        if [ "$(echo "$CURRENT_TIME"-"$TIME_SINCE_FIRST_API_CALL" | bc)" -lt "86400" ]
+        then
+            echo "[  *] It is not safe to hit the API at the moment, please try again in 24 hours"
+            exit 1
+        else
+            echo " [*  ] It appears to be safe"
+            rm "$CACHE/api-limiter" # Resets the file birth time, which is what is used above
+            echo "1" > "$CACHE/api-limiter"
+        fi
+    fi
+
     echo " [*  ] Checking Cache"
     mkdir -p "$CACHE/$SHOW_ID" # It's quicker to make the dir every time
     LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
     if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi # If the file doesn't exist, set 0 to force update
-    if [ "$(echo "$(date +%s)"-"$LAST_MODIFIED" | bc)" -lt "86400" ]
+    if [ "$(echo "$CURRENT_TIME"-"$LAST_MODIFIED" | bc)" -lt "604800" ] # 2025-05-02 We are upping the cache time to 1 week to prevent bans as much as possible.
     then
         echo " [*  ] Cache is new enough, not updating"
     else
