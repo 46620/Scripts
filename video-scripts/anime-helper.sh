@@ -5,7 +5,7 @@
 # Script name: anime-helper.sh
 # Desc: Anidb metadata agent written in bash
 # Start Date: 2023-10-30
-version=20250624 # Last updated date YYYYMMDD
+version=20250630 # Last updated date YYYYMMDD
 function usage() {
     local program_name
     program_name=${0##*/}
@@ -44,7 +44,6 @@ function install_deps() {
         echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
     fi
     echo " [*  ] Dependencies installed! Please rerun the script without -d to actually use it."
-    exit 0
 }
 
 function vars() {
@@ -212,6 +211,7 @@ function prep() {
                 ;;
             d)
                 install_deps
+                exit 0
                 ;;
             h|\?|:|*)
                 usage
