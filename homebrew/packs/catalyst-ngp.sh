@@ -3,6 +3,12 @@
 #  PS VITA/TV CLEAN SD/RESTORE SCRIPT  #
 ########################################
 
+###########################
+# Quiet some Shell Checks #
+###########################
+#shellcheck disable=2154
+#shellcheck disable=2164
+
 ########
 # Info #
 ########

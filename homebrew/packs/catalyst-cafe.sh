@@ -3,11 +3,18 @@
 # Ah shit, here we go again #
 #############################
 
+###########################
+# Quiet some Shell Checks #
+###########################
+#shellcheck disable=2154
+#shellcheck disable=2164
+
 #########
 # Notes #
 #########
 # This script currently only makes a mochaCFW setup with indexiine as I do not wanna manage 3 builds at once rn
 # This script also downloads all the files in order from the guide with no real section. why? Cause I don't mod wii u's enough to know a better order.
+# This is extremely old and not updated well, please do not actually use this right now
 
 ############
 # Download #

@@ -3,10 +3,18 @@
 # THIS WAS STOLEN FROM MY NX SCRIPT!!  #
 ########################################
 
+###########################
+# Quiet some Shell Checks #
+###########################
+#shellcheck disable=2154
+#shellcheck disable=2164
+
 ###################
 # Fucking kill me #
 ###################
-export script_start=`pwd`
+declare script_start
+script_start=$(pwd)
+export script_start
 
 ########
 # Luma #

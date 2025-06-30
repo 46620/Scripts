@@ -6,6 +6,12 @@
 # To violate the DMCA, thank you <3    #
 ########################################
 
+###########################
+# Quiet some Shell Checks #
+###########################
+#shellcheck disable=2154
+#shellcheck disable=2164
+
 function firmware() {
     echo "Downloading CFW and bootloader"
     curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/CTCaer/Hekate/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qi -
@@ -52,7 +58,7 @@ function payloads() {
 
 function archive(){
     echo "Create zip archive"
-    7z a -tzip "out/latest.zip" * > /dev/null
+    7z a -tzip "out/latest.zip" -- * > /dev/null
     cd out
     md5sum "latest.zip" > "latest.zip.md5"
 }
