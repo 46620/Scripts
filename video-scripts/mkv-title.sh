@@ -3,14 +3,13 @@
 #set -x
 ulimit -n 20000
 readarray -d '' files_array < <(find . -iname "*.mkv" | sed 's/.mkv//g')
-IFS=$'\n' files_sorted=($(sort <<<"${files_array[*]}"))
-unset IFS
+readarray -t files_sorted < <(printf '%s\n' "${files_array[@]}" | sort)
 
 # Store file names
 function store() {
         for ep in "${files_sorted[@]}"
         do
-            ep2=`basename "$ep"`
+            ep2=$(basename "$ep")
             echo "[ * ] $ep2"
             mkvpropedit "$ep.mkv" --edit info --set "title=$ep2" > /dev/null 2>&1 &
         done
@@ -21,8 +20,8 @@ function fix() {
         echo " [ * ] Fixing files. This will take a while."
         for ep in "${files_sorted[@]}"
         do
-            echo "[ * ] `basename "$ep"`"
-            mv "$ep.mkv" "`dirname "$ep"`/`ffprobe "$ep".mkv |& grep "title" | cut -b 23- | head -n 1`.mkv"
+            echo "[ * ] $(basename "$ep")"
+            mv "$ep.mkv" "$(dirname "$ep")/$(ffprobe "$ep".mkv |& grep "title" | cut -b 23- | head -n 1).mkv"
         done
 }
 

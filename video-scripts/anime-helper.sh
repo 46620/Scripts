@@ -5,12 +5,12 @@
 # Script name: anime-helper.sh
 # Desc: Anidb metadata agent written in bash
 # Start Date: 2023-10-30
-
+version=20250624 # Last updated date YYYYMMDD
 function usage() {
     local program_name
     program_name=${0##*/}
     cat <<EOF
-$program_name v20250502
+$program_name v$version
 Usage: $program_name <-i /path/to/show> <-n #> <-s ##>
 Options:
     -h               Prints this message
@@ -60,30 +60,33 @@ function vars() {
 
 # This is to try to prevent a ban from anidb, as their API is very strict
 function cache() {
-    echo " [*  ] Checking API limit" # 2025-05-02 I found out anidb has a 15/something API limit, so I am now taking that into account. I forgot about their "Anti Leech Protection"
+    # 2025-05-02:   I found out AniDB has a 15/day API limit. That is now taken into account.
+    #               To stay as safe as possible, I only allow you to make 14 calls in a 24 hour time period.
+    #               I don't know if it's 24 since first or rolling, which could up with temp bans if it's rolling.
+    echo " [*  ] Checking API limit"
     CURRENT_API_USAGE=$(cat "$CACHE/api-limiter")
     if [ $? -eq 1 ]; then CURRENT_API_USAGE=0; fi # If the file doesn't exist, set 0
-    if [ "$CURRENT_API_USAGE" -lt "15" ] # 15 appears to be the limit in a set time frame. IDK the time frame yet, hopefully it's not a "if you hit this you're cooked forever type situation". We set the limit technically at 14 in this script to possibly mitigate a ban risk below.
+    if [ "$CURRENT_API_USAGE" -lt "15" ]
     then
         echo " [*  ] API limit not reached yet"
-        CURRENT_API_USAGE=$((CURRENT_API_USAGE+1)) # Up the counter to keep track
+        CURRENT_API_USAGE=$((CURRENT_API_USAGE+1))
         echo "$CURRENT_API_USAGE" > "$CACHE/api-limiter"
     else
         echo " [ * ] Checking if it's safe to contact AniDB"
         TIME_SINCE_FIRST_API_CALL=$(stat -c %W "$CACHE/api-limiter") # Check time the file was created, this would line up with the first API call made. This has several flaws. First being if the user does 1 call and then 23 hours and 59 minutes later does 15 more, there is a chance they will get banned. Second is that we should do this before checking if the limit has been hit. Third being none of this was tested because I got banned before this code was written and currently can't test.
         if [ "$(echo "$CURRENT_TIME"-"$TIME_SINCE_FIRST_API_CALL" | bc)" -lt "86400" ]
         then
-            echo "[  *] It is not safe to hit the API at the moment, please try again in 24 hours"
+            echo "[  *] Possible ban risk, please try again in 24 hours"
             exit 1
         else
-            echo " [*  ] It appears to be safe"
+            echo " [*  ] You should be fine, please open a bug report if you get temp banned."
             rm "$CACHE/api-limiter" # Resets the file birth time, which is what is used above
             echo "1" > "$CACHE/api-limiter"
         fi
     fi
 
     echo " [*  ] Checking Cache"
-    mkdir -p "$CACHE/$SHOW_ID" # It's quicker to make the dir every time
+    mkdir -p "$CACHE/$SHOW_ID"
     LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
     if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi # If the file doesn't exist, set 0 to force update
     if [ "$(echo "$CURRENT_TIME"-"$LAST_MODIFIED" | bc)" -lt "604800" ] # 2025-05-02 We are upping the cache time to 1 week to prevent bans as much as possible.
@@ -92,7 +95,7 @@ function cache() {
     else
         echo " [ * ] Updating cache"
         curl -sH 'Accept-encoding: gzip' "$META_URL_BASE$SHOW_ID" | gunzip - > "$CACHE/$SHOW_ID/data.xml"
-        wget -qO "$CACHE/$SHOW_ID/cover.jpg" $IMG_URL_BASE"$(xmlstarlet sel -t -v '//picture' "$CACHE"/"$SHOW_ID"/data.xml | head -1)"
+        wget -qO "$CACHE/$SHOW_ID/cover.jpg" $IMG_URL_BASE"$(xmlstarlet sel -t -v '//picture' "$CACHE"/"$SHOW_ID"/data.xml | head -1)" # FOR SOME REASON THE PICTURE ISN'T THE SAME ID AS THE FUCKING SHOW
         echo " [*  ] Cache updated"
     fi
 }
@@ -134,8 +137,8 @@ function build_array() {
 }
 
 function rename() {
-    # This code will throw a lot of "cannot stat ''" warnings if you have less episodes than what has aired.
-    echo " [*  ] Quickly building episode array" # I didn't know where else to put this code :3
+    # This code will throw a "cannot stat ''" warning. I never figured out why.
+    echo " [*  ] Quickly building episode array"
     build_array
 
     echo " [*  ] Renaming episodes"
@@ -155,12 +158,14 @@ function metadata() {
     build_array # The files are different, we need to rebuild the arrays
     for EPISODE in "${episodes_sorted[@]}"
     do   
-        EPISODE_BASE=$(basename "$EPISODE")
+        EPISODE_BASE=$(basename "$EPISODE") # Get "SHOW NAME - S#E# - EPISODE NAME"
         echo " [*  ] $EPISODE_BASE"
         mkvpropedit "$EPISODE" --edit info \
                                --set "title=${EPISODE_BASE%.*}" \
                                --set "date=${AIR_DATE[$COUNTER]}T00:00:00+00:00" \
                                --attachment-name "cover" --attachment-mime-type "image/jpeg" --add-attachment "$CACHE"/"$SHOW_ID"/cover.jpg > /dev/null 2>&1
+                               # Embeds "SHOW NAME - S#E# - EPISODE NAME" into the title, sets the date the episode aired, and then embeds the show cover into the file.
+                               # TODO: MAKE EMBEDDING THE COVER OPTIONAL!
         COUNTER=$((COUNTER+1))
     done
     # TODO: Find out if another metadata source has air times and add to the time above
