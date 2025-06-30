@@ -15,7 +15,7 @@ vol_count=$(find . -type f -name "*.cbz" | wc -l)
 for vol in $(seq -w 0 "$vol_count")
 do
     if [ "$vol" -eq 0 ];then continue; fi # array starts at zero i need 1 blah blah WHO GAF!!!
-    xmlstarlet ed -u "/ComicInfo/Title" -v "Vol. $vol" -u "/ComicInfo/Number" -v "$vol_count" ComicInfo.xml > ComicInfo-$vol.xml # Change Title and 'Chapter' number
+    xmlstarlet ed -u "/ComicInfo/Title" -v "Vol. $vol" -u "/ComicInfo/Number" -v "$vol_count" ComicInfo.xml > ComicInfo-"$vol".xml # Change Title and 'Chapter' number
 done
 
 mapfile -t vol_order < <(find . -type f -name "*.cbz" | sort)
