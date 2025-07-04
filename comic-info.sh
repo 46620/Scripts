@@ -27,12 +27,23 @@ function install_deps() {
     echo " [ * ] Installing dependencies"
     if [ -x "$(command -v pacman)" ]
     then
-        sudo pacman -S curl jq xmlstarlet zip
+        sudo pacman -S curl mkvtoolnix-cli xmlstarlet zip
+    elif [ -x "$(command -v apk)" ]
+    then
+        sudo apk add curl mkvtoolnix-cli xmlstarlet zip
+    elif [ -x "$(command -v apt)" ]
+    then
+        sudo apt install curl mkvtoolnix-cli xmlstarlet zip
+    elif [ -x "$(command -v dnf)" ]
+    then
+        sudo dnf install curl mkvtoolnix-cli xmlstarlet zip
+    elif [ -x "$(command -v zypper)" ]
+    then
+        sudo zypper install curl mkvtoolnix-cli xmlstarlet zip
     else
-        echo " [  *] Your current distro is not supported. Make a PR if you want support" # I just wanna finish writing this before work, so only Arch support for now.
+        echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
     fi
     echo " [*  ] Dependencies installed! Please rerun the script without -d to actually use it."
-    exit 0
 }
 
 function vars() {
