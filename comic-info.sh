@@ -55,7 +55,6 @@ function vars() {
 
 function cache() {
     # We cache everything pulled, and the cache is marked as old after 24 hours, allowing you to repull the data
-    # TODO: Decide if cache should ever be redownloaded from a finished series, as most data won't change.
     echo "[*  ] Checking cache"
     mkdir -p "$CACHE/$MANGA_ID" # It doesn't break anything to make it every time, and it's shorter to do it this way
     LAST_MODIFIED=$(stat -c %Y "$CACHE/$MANGA_ID/data.json" 2>/dev/null) # Check cache time
@@ -92,7 +91,7 @@ function create_template() {
     echo " [*  ] Creating template xml file from data"
     SERIES_NAME=$(jq -r ".data.Media.title | to_entries[0].value" "$CACHE/$MANGA_ID/data.json") # We use the Romanji name to stay consistent with other sources
     SUMMARY=$(jq -r ".data.Media.description" "$CACHE/$MANGA_ID/data.json" | sed 's/<[^>]*>//g') # Need to strip out HTML tags that get left behind. Hopefully no manga uses them for any part of the description.
-    WRITER=$(jq -r '.data.Media.staff.edges[] | select(.role == "Story & Art") | .node.name.full' "$CACHE/$MANGA_ID/data.json") # TODO: This can easily fucking break... oopsies :3
+    WRITER=$(jq -r '.data.Media.staff.edges[] | select(.role == "Story & Art") | .node.name.full' "$CACHE/$MANGA_ID/data.json") # From my testing I haven't come across a series that doesn't have "Story & Art" as the same person, if that happens please submit an issue with the series so I can fix this.
     PENCILLER=$WRITER # For most series I've worked with, they're the same person so I will just assume that to be the case.
     GENRE=$(jq -r .data.Media.genres[] "$CACHE/$MANGA_ID/data.json" | sed '{:q;N;s/\n/, /g;t q}')
 
@@ -155,10 +154,6 @@ function cleanup() {
     rm /tmp/ComicInfo.xml
     exit 0
 }
-
-# TODO:
-#       Make cleaner (failed)
-#       Clear all TODOs
 
 function main() {
     vars
