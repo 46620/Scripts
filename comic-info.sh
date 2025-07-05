@@ -5,7 +5,7 @@
 # Desc: ComicInfo.xml creator in bash.
 #       Useful for when scraping/creating a .cbz yourself and need metadata
 # Start Date: 2025-06-30
-version=20250703 # Last updated date YYYYMMDD, days being XX usually means beta I hope to finish in the month
+version=20250704 # Last updated date YYYYMMDD, days being XX usually means beta I hope to finish in the month
 function usage() {
     local program_name
     program_name=${0##*/}
@@ -27,19 +27,19 @@ function install_deps() {
     echo " [ * ] Installing dependencies"
     if [ -x "$(command -v pacman)" ]
     then
-        sudo pacman -S curl mkvtoolnix-cli xmlstarlet zip
+        sudo pacman -S curl jq xmlstarlet zip
     elif [ -x "$(command -v apk)" ]
     then
-        sudo apk add curl mkvtoolnix-cli xmlstarlet zip
+        sudo apk add curl jq xmlstarlet zip
     elif [ -x "$(command -v apt)" ]
     then
-        sudo apt install curl mkvtoolnix-cli xmlstarlet zip
+        sudo apt install curl jq xmlstarlet zip
     elif [ -x "$(command -v dnf)" ]
     then
-        sudo dnf install curl mkvtoolnix-cli xmlstarlet zip
+        sudo dnf install curl jq xmlstarlet zip
     elif [ -x "$(command -v zypper)" ]
     then
-        sudo zypper install curl mkvtoolnix-cli xmlstarlet zip
+        sudo zypper install curl jq xmlstarlet zip
     else
         echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
     fi
@@ -65,9 +65,8 @@ function cache() {
     else
         echo " [ * ] Updating cache"
         # This will grab everything for a ComicInfo.xml besides the Translator. I prefer to set the scan group that did it, unless someone uploaded the official translation
-        curl -X POST https://graphql.anilist.co \
-        -H "Content-Type: application/json" \
-        -d "{
+        if ! curl -sS -X POST https://graphql.anilist.co -H "Content-Type: application/json" \
+            -d "{
             \"query\": \"query (\$id: Int){ \
                 Media(id: \$id, type: MANGA) { \
                     id \
@@ -78,10 +77,14 @@ function cache() {
                     genres \
                     countryOfOrigin \
                     status \
-                } \
-            }\",
-            \"variables\": { \"id\": $MANGA_ID }
-            }" > "$CACHE/$MANGA_ID/data.json"
+                    } \
+                }\",
+                \"variables\": { \"id\": $MANGA_ID }
+            }" -o "$CACHE/$MANGA_ID/data.json"
+        then
+            echo "[!! ] Error: Failed to fetch data from AniList. Please check your internet connection or the AniList ID."
+            exit 1
+        fi
         echo " [*  ] Cache updated"
     fi
 }
@@ -117,14 +120,13 @@ function metadata() {
     LOCAL_VOL_COUNT=$(find "$MANGA_PATH" -type f -name "*.cbz" | wc -l) # This is the volumes locally stored, useful in case you don't have every volume downloaded
     mapfile -t LOCAL_VOL_ORDER < <(find "$MANGA_PATH" -type f -name "*.cbz" | sort) # Put file in A-Z order. oh yeah that was a requirement for this to work correctly if you didn't know.
 
-    for xml in $(seq -w 0 "$LOCAL_VOL_COUNT")
+    for xml in $(seq -w 0 $(("$LOCAL_VOL_COUNT" - 1)))
     do
         basename "${LOCAL_VOL_ORDER[10#$xml]}"
         COUNTER=$(( 10#$xml+1 ))
         if [ ${#COUNTER} -eq 1 ]; then COUNTER=0"$COUNTER"; fi # Yet another hacky workaround i refuse to learn printf
         xmlstarlet ed -u "/ComicInfo/Title" -v "Vol. $COUNTER" -u "/ComicInfo/Number" -v "$COUNTER" "$CACHE/$MANGA_ID/ComicInfo.xml" > /tmp/ComicInfo.xml # Change Title and Number tag (I wanted to use sed, already wrote this though)
-        zip -ju "${LOCAL_VOL_ORDER[10#$xml]}" /tmp/ComicInfo.xml
-        if [ "$COUNTER" -eq "$LOCAL_VOL_COUNT" ];then break;fi
+        zip -qju "${LOCAL_VOL_ORDER[10#$xml]}" /tmp/ComicInfo.xml
     done
 }
 
@@ -138,12 +140,11 @@ function rename() {
         # I lied, it's very stable but I don't feel like testing it much so I'm going to say experimental
         mapfile -t LOCAL_VOL_ORDER < <(find "$MANGA_PATH" -type f -name "*.cbz" | sort) # I am remaking the array just for safety, it shouldn't have changed but I don't trust the user
         COUNTER=0 # This needs to be reset
-        for file in $(seq -w 0 "$LOCAL_VOL_COUNT")
+        for file in $(seq -w 0 $(("$LOCAL_VOL_COUNT" - 1)))
         do
             COUNTER=$(( 10#$file+1 ))
             if [ ${#COUNTER} -eq 1 ]; then COUNTER=0"$COUNTER"; fi # Yet another hacky workaround i refuse to learn printf
             mv -v "${LOCAL_VOL_ORDER[10#$file]}" "$MANGA_PATH/$SERIES_NAME - Vol $COUNTER. [$TRANSLATOR].cbz"
-            if [ "$COUNTER" -eq "$LOCAL_VOL_COUNT" ];then break;fi
         done
         mv -v "$MANGA_PATH" "$(dirname "$MANGA_PATH")/$SERIES_NAME"
     fi
@@ -187,12 +188,7 @@ function prep() {
                 fi
                 ;;
             t)
-                if [[ -z $OPTARG ]]
-                then
-                    TRANSLATOR="N/A"
-                else
-                    TRANSLATOR="$OPTARG"
-                fi
+                TRANSLATOR=${OPTARG:-"N/A"}
                 ;;
             d)
                 install_deps
