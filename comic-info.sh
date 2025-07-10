@@ -5,7 +5,7 @@
 # Desc: ComicInfo.xml creator in bash.
 #       Useful for when scraping/creating a .cbz yourself and need metadata
 # Start Date: 2025-06-30
-version=20250704 # Last updated date YYYYMMDD, days being XX usually means beta I hope to finish in the month
+version=20250709 # Last updated date YYYYMMDD, days being XX usually means beta I hope to finish in the month
 function usage() {
     local program_name
     program_name=${0##*/}
@@ -82,7 +82,7 @@ function cache() {
                 \"variables\": { \"id\": $MANGA_ID }
             }" -o "$CACHE/$MANGA_ID/data.json"
         then
-            echo "[!! ] Error: Failed to fetch data from AniList. Please check your internet connection or the AniList ID."
+            echo "[  *] API did not return data, oops!"
             exit 1
         fi
         echo " [*  ] Cache updated"
