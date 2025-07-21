@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# set -x
-
 # Script name: anime-helper.sh
 # Desc: Anidb metadata agent written in bash
 # Start Date: 2023-10-30
-version=202507xx # Last updated date YYYYMMDD
+version=20250721 # Last updated date YYYYMMDD
 function usage() {
     local program_name
     program_name=${0##*/}
@@ -27,41 +25,38 @@ function install_deps() {
     echo " [ * ] Installing dependencies"
     if [ -x "$(command -v pacman)" ]
     then
-        sudo pacman -S wget curl mkvtoolnix-cli xmlstarlet
+        sudo pacman -S curl mkvtoolnix-cli xmlstarlet
     elif [ -x "$(command -v apk)" ]
     then
-        sudo apk add wget curl mkvtoolnix xmlstarlet
+        sudo apk add curl mkvtoolnix xmlstarlet
     elif [ -x "$(command -v apt)" ]
     then
-        sudo apt install wget curl mkvtoolnix xmlstarlet
+        sudo apt install curl mkvtoolnix xmlstarlet
     elif [ -x "$(command -v dnf)" ]
     then
-        sudo dnf install wget curl mkvtoolnix xmlstarlet
+        sudo dnf install curl mkvtoolnix xmlstarlet
     elif [ -x "$(command -v zypper)" ]
     then
         sudo zypper install curl mkvtoolnix xmlstarlet
     else
-        echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
+        echo " [  *] Your current distro is not supported. Make a PR if you want support" # Gentoo users are not supported because I am NOT figuring out the fucking emerge packages.
     fi
     echo " [*  ] Dependencies installed! Please rerun the script without -d to actually use it."
 }
 
 function vars() {
     echo " [*  ] Setting variables"
-    readonly CLIENT_NAME=farris # anidb client
-    readonly CLIENT_VER=1 # anidb client version
+    readonly ANIDB_CLIENT_NAME=farris
+    readonly ANIDB_CLIENT_VER=1
     readonly CACHE="$HOME/.local/share/46620/anime-helper/cache/"
-    readonly META_URL_BASE="http://api.anidb.net:9001/httpapi?client=$CLIENT_NAME&clientver=$CLIENT_VER&protover=1&request=anime&aid="
+    readonly META_URL_BASE="http://api.anidb.net:9001/httpapi?client=$ANIDB_CLIENT_NAME&clientver=$ANIDB_CLIENT_VER&protover=1&request=anime&aid="
     readonly IMG_URL_BASE="https://cdn-us.anidb.net/images/main/"
     CURRENT_TIME=$(date +%s)
-    COUNTER=0 # This is used way later in the script, I just need it set to zero somewhere before the for loop uses it
+    COUNTER=0
 }
 
 # This is to try to prevent a ban from anidb, as their API is very strict
 function cache() {
-    # 2025-05-02:   I found out AniDB has a 15/day API limit. That is now taken into account.
-    #               To stay as safe as possible, I only allow you to make 14 calls in a 24 hour time period.
-    #               I don't know if it's 24 since first or rolling, which could up with temp bans if it's rolling.
     echo " [*  ] Checking API limit"
     CURRENT_API_USAGE=$(cat "$CACHE/api-limiter")
     if [ $? -eq 1 ]; then CURRENT_API_USAGE=0; fi # If the file doesn't exist, set 0
@@ -87,14 +82,14 @@ function cache() {
     echo " [*  ] Checking Cache"
     mkdir -p "$CACHE/$SHOW_ID"
     LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
-    if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi # If the file doesn't exist, set 0 to force update
-    if [ $(("$CURRENT_TIME"-"$LAST_MODIFIED")) -lt "604800" ] # 2025-05-02 We are upping the cache time to 1 week to prevent bans as much as possible.
+    if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi
+    if [ $(("$CURRENT_TIME"-"$LAST_MODIFIED")) -lt "604800" ] # Cache is valid for 7 days, this might get lowered to 48 hours.
     then
         echo " [*  ] Cache is new enough, not updating"
     else
         echo " [ * ] Updating cache"
         curl -sH 'Accept-encoding: gzip' "$META_URL_BASE$SHOW_ID" | gunzip - > "$CACHE/$SHOW_ID/data.xml"
-        wget -qO "$CACHE/$SHOW_ID/cover.jpg" $IMG_URL_BASE"$(xmlstarlet sel -t -v '//picture' "$CACHE"/"$SHOW_ID"/data.xml | head -1)" # FOR SOME REASON THE PICTURE ISN'T THE SAME ID AS THE FUCKING SHOW
+        curl -o "$CACHE/$SHOW_ID/cover.jpg" $IMG_URL_BASE"$(xmlstarlet sel -t -v '//picture' "$CACHE"/"$SHOW_ID"/data.xml | head -1)"
         echo " [*  ] Cache updated"
     fi
 }
@@ -121,16 +116,11 @@ function parse() {
     echo " [*  ] Getting Show name"
     SHOW_NAME=$(xmlstarlet sel -t -v '//title[@type="main"]' "$CACHE"/"$SHOW_ID"/data.xml)
 
-    # The example uses One Piece numbers, but this will work with any padding
-    # The long xmlstarlet command grabs any episode name that is marked as type 1 (a real episode) with the episode number in front of it
-    # padded out to 0001-1000, then sorts them so the episodes are in the correct order (some shows have them out of order, don't ask why)
-    # Then we cut the episode numbers off to leave us with just the names in order, and then we change all back ticks to single quotes,
-    # to match every sane naming method. It's terrible, it shouldn't exist, ChatGPT literally wrote the ENTIRE xmlstarlet part because
-    # I could not figure it out. :3
+    # xmlstart command gets all non special episodes, pads the number out to 4 digits, sorts them 0-9, then strips the numbers out, then replaces tildes with a single quote
+    # I do plan to rewrite this without AI at some point, but for now this code works.
 }
 
 function build_array() {
-    # I didn't wanna rewrite this code so shutup
     readarray -d '' episodes_array < <(find "$SHOW_PATH" -mindepth 1 -maxdepth 1 -type f -print0)
     readarray -t episodes_sorted < <(printf '%s\n' "${episodes_array[@]}" | sort)
 }
@@ -151,19 +141,17 @@ function rename() {
 }
 
 function metadata() {
-    # This function is braindead but it works
+    # Embeds "SHOW NAME - S#E# - EPISODE NAME" into the title, sets the date the episode aired, and then embeds the show cover into the file.
     echo " [*  ] Embedding episode names"
-    build_array # The files are different, we need to rebuild the arrays
+    build_array
     for EPISODE in "${episodes_sorted[@]}"
     do   
-        EPISODE_BASE=$(basename "$EPISODE") # Get "SHOW NAME - S#E# - EPISODE NAME"
+        EPISODE_BASE=$(basename "$EPISODE")
         echo " [*  ] $EPISODE_BASE"
         mkvpropedit "$EPISODE" --edit info \
                                --set "title=${EPISODE_BASE%.*}" \
                                --set "date=${AIR_DATE[$COUNTER]}T00:00:00+00:00" \
                                --attachment-name "cover" --attachment-mime-type "image/jpeg" --add-attachment "$CACHE"/"$SHOW_ID"/cover.jpg > /dev/null 2>&1
-                               # Embeds "SHOW NAME - S#E# - EPISODE NAME" into the title, sets the date the episode aired, and then embeds the show cover into the file.
-                               # TODO: MAKE EMBEDDING THE COVER OPTIONAL!
         COUNTER=$((COUNTER+1))
     done
     # TODO: Find out if another metadata source has air times and add to the time above
@@ -190,7 +178,7 @@ function prep() {
                     usage
                     exit 1
                 fi
-                ;;
+                ;; # SHOW_PATH
             n)
                 numbers='^[0-9]+$'
                 if ! [[ $OPTARG =~ $numbers ]]
@@ -200,7 +188,7 @@ function prep() {
                 else
                     SHOW_ID="$OPTARG" # TODO: Work on show name parser to make this step optional
                 fi
-                ;;
+                ;; # SHOW_ID
             s)
                 numbers='^[0-9]+$'
                 if ! [[ $OPTARG =~ $numbers ]]
@@ -210,7 +198,7 @@ function prep() {
                 else
                     SEASON_NUMBER="$OPTARG"
                 fi
-                ;;
+                ;; # SEASON_NUMBER
             d)
                 install_deps
                 exit 0
@@ -228,9 +216,5 @@ function prep() {
     fi
     main
 }
-
-# SHOW_PATH=i
-# SHOW_ID=n
-# SEASON=s
 
 prep "$@"
