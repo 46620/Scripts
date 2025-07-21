@@ -5,7 +5,7 @@
 # Script name: anime-helper.sh
 # Desc: Anidb metadata agent written in bash
 # Start Date: 2023-10-30
-version=20250630 # Last updated date YYYYMMDD
+version=202507xx # Last updated date YYYYMMDD
 function usage() {
     local program_name
     program_name=${0##*/}
@@ -27,19 +27,19 @@ function install_deps() {
     echo " [ * ] Installing dependencies"
     if [ -x "$(command -v pacman)" ]
     then
-        sudo pacman -S wget curl bc mkvtoolnix-cli xmlstarlet
+        sudo pacman -S wget curl mkvtoolnix-cli xmlstarlet
     elif [ -x "$(command -v apk)" ]
     then
-        sudo apk add wget curl bc mkvtoolnix xmlstarlet
+        sudo apk add wget curl mkvtoolnix xmlstarlet
     elif [ -x "$(command -v apt)" ]
     then
-        sudo apt install wget curl bc mkvtoolnix xmlstarlet
+        sudo apt install wget curl mkvtoolnix xmlstarlet
     elif [ -x "$(command -v dnf)" ]
     then
-        sudo dnf install wget curl bc mkvtoolnix xmlstarlet
+        sudo dnf install wget curl mkvtoolnix xmlstarlet
     elif [ -x "$(command -v zypper)" ]
     then
-        sudo zypper install curl bc mkvtoolnix xmlstarlet
+        sudo zypper install curl mkvtoolnix xmlstarlet
     else
         echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
     fi
@@ -73,7 +73,7 @@ function cache() {
     else
         echo " [ * ] Checking if it's safe to contact AniDB"
         TIME_SINCE_FIRST_API_CALL=$(stat -c %W "$CACHE/api-limiter") # Check time the file was created, this would line up with the first API call made. This has several flaws. First being if the user does 1 call and then 23 hours and 59 minutes later does 15 more, there is a chance they will get banned. Second is that we should do this before checking if the limit has been hit. Third being none of this was tested because I got banned before this code was written and currently can't test.
-        if [ "$(echo "$CURRENT_TIME"-"$TIME_SINCE_FIRST_API_CALL" | bc)" -lt "86400" ]
+        if [ $(("$CURRENT_TIME"-"$TIME_SINCE_FIRST_API_CALL")) -lt "86400" ]
         then
             echo "[  *] Possible ban risk, please try again in 24 hours"
             exit 1
@@ -88,7 +88,7 @@ function cache() {
     mkdir -p "$CACHE/$SHOW_ID"
     LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
     if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi # If the file doesn't exist, set 0 to force update
-    if [ "$(echo "$CURRENT_TIME"-"$LAST_MODIFIED" | bc)" -lt "604800" ] # 2025-05-02 We are upping the cache time to 1 week to prevent bans as much as possible.
+    if [ $(("$CURRENT_TIME"-"$LAST_MODIFIED")) -lt "604800" ] # 2025-05-02 We are upping the cache time to 1 week to prevent bans as much as possible.
     then
         echo " [*  ] Cache is new enough, not updating"
     else
@@ -136,16 +136,15 @@ function build_array() {
 }
 
 function rename() {
-    # This code will throw a "cannot stat ''" warning. I never figured out why.
     echo " [*  ] Quickly building episode array"
     build_array
 
     echo " [*  ] Renaming episodes"
-    for EPISODE in $(seq -w 0 "$EPISODE_COUNT")
+    for EPISODE in $(seq -w 0 $(("$EPISODE_COUNT" - 1)))
     do
         EPISODE_NUM=$(( 10#$EPISODE+1 )) # Bash starts at 0, shows start at 1, I need them to match
         EPISODE_NUM_LEN=${#EPISODE_NUM} # This is to deal with padding below
-        PADDING_REQ=$(($( echo ${#EPISODE_COUNT}-"$EPISODE_NUM_LEN" | bc))) # Subtract len of episodes by len of the current episode number
+        PADDING_REQ=$((${#EPISODE_COUNT}-"$EPISODE_NUM_LEN")) # Subtract len of episodes by len of the current episode number
         PADDING=$(head -c "$PADDING_REQ" /dev/zero | tr '\0' '0') # Create the zeros for padding
         mv -v "${episodes_sorted[10#$EPISODE]}" "$SHOW_PATH"/"$SHOW_NAME"\ -\ S"$SEASON_NUMBER"E"$PADDING""$EPISODE_NUM"\ -\ "${EPISODE_NAMES[10#$EPISODE]}".mkv # Renname the episodes
     done
@@ -189,6 +188,7 @@ function prep() {
                     SHOW_PATH="$OPTARG"
                 else
                     usage
+                    exit 1
                 fi
                 ;;
             n)
@@ -196,6 +196,7 @@ function prep() {
                 if ! [[ $OPTARG =~ $numbers ]]
                 then
                     usage
+                    exit 1
                 else
                     SHOW_ID="$OPTARG" # TODO: Work on show name parser to make this step optional
                 fi
@@ -205,6 +206,7 @@ function prep() {
                 if ! [[ $OPTARG =~ $numbers ]]
                 then
                     usage
+                    exit 1
                 else
                     SEASON_NUMBER="$OPTARG"
                 fi
@@ -222,6 +224,7 @@ function prep() {
     shift $((OPTIND - 1))
     if [ -z "$SHOW_PATH" ] || [ -z "$SHOW_ID" ]; then
         usage
+        exit 1
     fi
     main
 }
