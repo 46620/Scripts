@@ -65,7 +65,7 @@ function cache() {
     else
         echo " [ * ] Updating cache"
         # This will grab everything for a ComicInfo.xml besides the Translator. I prefer to set the scan group that did it, unless someone uploaded the official translation
-        if ! curl -sS -X POST https://graphql.anilist.co -H "Content-Type: application/json" \
+        curl -sS -X POST https://graphql.anilist.co -H "Content-Type: application/json" \
             -d "{
             \"query\": \"query (\$id: Int){ \
                 Media(id: \$id, type: MANGA) { \
@@ -80,12 +80,16 @@ function cache() {
                     } \
                 }\",
                 \"variables\": { \"id\": $MANGA_ID }
-            }" -o "$CACHE/$MANGA_ID/data.json"
+            }" -o "$CACHE/$MANGA_ID/data-tmp.json"
+        if [ "$(jq -r ".data.Media.id" "$CACHE/$MANGA_ID/data-tmp.json")" -eq "$MANGA_ID" ]
         then
-            echo "[  *] API did not return data, oops!"
+            echo " [*  ] Cache updated"
+            mv "$CACHE/$MANGA_ID/data-tmp.json" "$CACHE/$MANGA_ID/data.json"
+        else
+            echo " [  *] Anilist did not return the correct data! Below is the file returned."
+            echo "$CACHE/$MANGA_ID/data-tmp.json"
             exit 1
         fi
-        echo " [*  ] Cache updated"
     fi
 }
 
