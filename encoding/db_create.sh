@@ -1,13 +1,7 @@
 #!/bin/bash
 
-# Version: 1.0.1
-
 # Start date 2024-07-30
-# Last Update 2024-08-31
-
-# I got a shell checker :))
-# shellcheck disable=2164 # that fucking cd || exit shit
-# shellcheck disable=2317 # Unused code (trap ctrl_c screamed)
+# Version 20251101
 
 function vars() {
     # Variables that are set to make things work
@@ -22,7 +16,7 @@ function vars() {
     if [ -d TOOLS ]
     then
         echo " [*  ] TOOLS DIR FOUND! ADDING TO PATH"
-        PATH=$(pwd)/TOOLS:$PATH
+        PATH="$(pwd)/TOOLS:$PATH"
     fi
 }
 
@@ -32,7 +26,7 @@ function create_db() {
 }
 
 function fill_db() {
-    if [ -f "$LOCKDIR/$DB_LOCKFILE" ] # lock file check
+    if [ -f "$LOCKDIR/$DB_LOCKFILE" ]  # lock file check
         then
             echo " [ * ] LOCKFILE FOUND, DATABASE AGENT IS POSSIBLY RUNNING! IF IT'S NOT RUNNING PLEASE DELETE $LOCKDIR/$DB_LOCKFILE"
             exit 1
@@ -43,22 +37,21 @@ function fill_db() {
     readarray -t files_sorted < <(printf '%s\n' "${files_array[@]}" | sort)
     for file in "${files_sorted[@]}"
     do
-        tracks=$(ffprobe "$file" |& grep -e "Stream.*Video" -e "Stream.*Audio" | wc -l) # If a file has both, it's safe to assume it's what we want.
+        tracks=$(ffprobe "$file" |& grep -c -e "Stream.*Video" -e "Stream.*Audio")  # If a file has both, it's safe to assume it's a video file with audio.
         if [ "$tracks" -lt 2 ]
         then
-            echo " [ * ] $file missing either audio or video track. Skipping" # This can have false positives
-            continue # I didn't know this was a thing
+            echo " [ * ] $file might not be a video file, skipping for now."
+            continue
         fi
-        ffprobe "$file" |& grep "Video: av1" &> /dev/null
-        if [ $? -eq 0 ] # Check if the file is av1.
+        if ffprobe "$file" |& grep -q "Video: av1"
         then
-            #echo " [ * ] $file is AV1, don't put in database" # uncomment if you want to make sure the script it running without watching *top
-            continue # file is AV1, do nothing
+            echo " [ * ] $file is already AV1, skipping"
+            continue
         fi
         echo " [ * ] $file is not AV1, put in database"
         file_escaped=$(echo "$file" | sed "s/'/''/g")
         file_stitched=$(echo "$file_escaped" | cut -c 1-)
-        file_fixed=$(echo "$file_stitched" | sed "s@$MEDIA_ROOT/@@g")
+        file_fixed=${file_stitched//$MEDIA_ROOT\//}
         if [ "$(sqlite3 "$DB_PATH/$DATABASE_NAME".db "SELECT COUNT(*) FROM '$ENCTABLE_NAME' WHERE file = '$file_fixed';")" -gt 0 ]
         then
             echo " [ * ] File already in database"
