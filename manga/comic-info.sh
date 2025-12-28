@@ -50,7 +50,7 @@ function vars() {
     readonly CACHE="$HOME/.local/share/46620/comic-info/cache"
     CURRENT_TIME=$(date +%s)
     COUNTER=0
-    EXP_USE_RENAMER=0 # This will rename files to "$SERIES_NAME - Vol $VOL_NUM. [$TRANSLATOR].cbz". This will also renamed the "$MANGA_PATH", hence why it'll stay as EXP
+    EXP_USE_RENAMER=1 # This will rename files to "$SERIES_NAME - Vol $VOL_NUM. [$TRANSLATOR].cbz". This will also renamed the "$MANGA_PATH", hence why it'll stay as EXP
 }
 
 function cache() {
