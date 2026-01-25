@@ -5,7 +5,7 @@
 # Desc: ComicInfo.xml creator in bash.
 #       Useful for when scraping/creating a .cbz yourself and need metadata
 # Start Date: 2025-06-30
-version=20250709 # Last updated date YYYYMMDD, days being XX usually means beta I hope to finish in the month
+version=20260125 # Last updated date YYYYMMDD, days being XX usually means beta I hope to finish in the month
 function usage() {
     local program_name
     program_name=${0##*/}
@@ -44,6 +44,7 @@ function install_deps() {
         echo " [  *] Your current distro is not supported. Make a PR if you want support" # This will most likely just be gentoo users, I am NOT dealing with them right now.
     fi
     echo " [*  ] Dependencies installed! Please rerun the script without -d to actually use it."
+    exit 0
 }
 
 function vars() {
