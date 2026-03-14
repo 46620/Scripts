@@ -27,7 +27,7 @@ function configs() {
     wget -qO atmosphere/hosts/emummc.txt "https://nh-server.github.io/switch-guide/files/emummc.txt"
     wget -qO bootloader/hekate_ipl.ini "https://suchmememanyskill.github.io/guides/Img/hekate_ipl.ini"
     wget -qO bootloader/patches.ini "https://suchmememanyskill.github.io/guides/Img/patches.ini"
-    wget -O bootloader/bootlogo.bmp "https://cdn.discordapp.com/attachments/441119928334942218/939026586630512690/bootlogo.bmp"
+    wget -O bootloader/bootlogo.bmp "https://46620.moe/bootlogo.bmp"
     curl --output - -sL https://nh-server.github.io/switch-guide/files/bootlogos.zip | bsdtar -xvf -
 }
 
