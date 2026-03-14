@@ -14,7 +14,7 @@
 
 function firmware() {
     echo "Downloading CFW and bootloader"
-    curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/CTCaer/Hekate/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qi -
+    curl -sL -H "Authorization: token $ghtoken" https://api.github.com/repos/CTCaer/Hekate/releases/latest | jq -r '.assets[1].browser_download_url' | wget -qi -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/Atmosphere-NX/Atmosphere/releases | grep -wo "https.*.zip" | head -1 | wget -qi -
     unzip -q hekate*.zip
     unzip -q atmosphere*.zip
@@ -39,7 +39,7 @@ function apps() {
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/mtheall/ftpd/releases/latest | grep -wo "https.*.nro" | tail -1 | wget -qO "switch/ftpd.nro" -i -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/XorTroll/Goldleaf/releases | grep -wo "https.*eaf.nro" | head -1 | wget -qO "switch/Goldleaf.nro" -i -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/J-D-K/JKSV/releases | grep -wo "https.*.nro" | wget -qO "switch/JKSV.nro" -i -
-    curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[2].browser_download_url' | wget -qO "switch/Checkpoint.nro" -i -
+    curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/FlagBrew/Checkpoint/releases/latest | jq -r '.assets[3].browser_download_url' | wget -qO "switch/Checkpoint.nro" -i -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/joel16/NX-Shell/releases/latest | jq -r '.assets[].browser_download_url' | wget -qO "switch/NX-Shell.nro" -i -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/exelix11/SwitchThemeInjector/releases/latest | jq -r '.assets[0].browser_download_url' | wget -qO "switch/NXThemesInstaller.nro" -i -
     curl -sLq -H "Authorization: token $ghtoken" https://api.github.com/repos/DarkMatterCore/nxdumptool/releases/latest | jq -r '.assets[].browser_download_url' | wget -qO "switch/nxdumptool.nro" -i -
