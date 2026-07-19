@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ########################################
 # Dear Nintendo, Due to recent DMCA's  #
 # You filed on Github, I would like to #

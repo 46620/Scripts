@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script name: anime-helper.sh
 # Desc: Anidb metadata agent written in bash
 # Start Date: 2023-10-30
-version=20250721 # Last updated date YYYYMMDD
+version=20260331 # Last updated date YYYYMMDD
 function usage() {
     local program_name
     program_name=${0##*/}
@@ -39,7 +39,7 @@ function install_deps() {
     then
         sudo zypper install curl mkvtoolnix xmlstarlet
     else
-        echo " [  *] Your current distro is not supported. Make a PR if you want support" # Gentoo users are not supported because I am NOT figuring out the fucking emerge packages.
+        echo " [  *] Your current distro is not supported. Make a PR if you want support"  # Gentoo users are not supported because I am NOT figuring out the fucking emerge packages.
     fi
     echo " [*  ] Dependencies installed! Please rerun the script without -d to actually use it."
 }
@@ -59,7 +59,7 @@ function vars() {
 function cache() {
     echo " [*  ] Checking API limit"
     CURRENT_API_USAGE=$(cat "$CACHE/api-limiter")
-    if [ $? -eq 1 ]; then CURRENT_API_USAGE=0; fi # If the file doesn't exist, set 0
+    if [ $? -eq 1 ]; then CURRENT_API_USAGE=0; fi  # If the file doesn't exist, set 0
     if [ "$CURRENT_API_USAGE" -lt "15" ]
     then
         echo " [*  ] API limit not reached yet"
@@ -67,23 +67,23 @@ function cache() {
         echo "$CURRENT_API_USAGE" > "$CACHE/api-limiter"
     else
         echo " [ * ] Checking if it's safe to contact AniDB"
-        TIME_SINCE_FIRST_API_CALL=$(stat -c %W "$CACHE/api-limiter") # Check time the file was created, this would line up with the first API call made. This has several flaws. First being if the user does 1 call and then 23 hours and 59 minutes later does 15 more, there is a chance they will get banned. Second is that we should do this before checking if the limit has been hit. Third being none of this was tested because I got banned before this code was written and currently can't test.
+        TIME_SINCE_FIRST_API_CALL=$(stat -c %W "$CACHE/api-limiter")  # Check time the file was created, this would line up with the first API call made. This has several flaws. First being if the user does 1 call and then 23 hours and 59 minutes later does 15 more, there is a chance they will get banned. Second is that we should do this before checking if the limit has been hit. Third being none of this was tested because I got banned before this code was written and currently can't test.
         if [ $(("$CURRENT_TIME"-"$TIME_SINCE_FIRST_API_CALL")) -lt "86400" ]
         then
             echo "[  *] Possible ban risk, please try again in 24 hours"
             exit 1
         else
             echo " [*  ] You should be fine, please open a bug report if you get temp banned."
-            rm "$CACHE/api-limiter" # Resets the file birth time, which is what is used above
+            rm "$CACHE/api-limiter"  # Resets the file birth time, which is what is used above
             echo "1" > "$CACHE/api-limiter"
         fi
     fi
 
     echo " [*  ] Checking Cache"
     mkdir -p "$CACHE/$SHOW_ID"
-    LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null) # Check cache time
+    LAST_MODIFIED=$(stat -c %Y "$CACHE/$SHOW_ID/data.xml" 2>/dev/null)  # Check cache time
     if [ $? -eq 1 ]; then LAST_MODIFIED=0; fi
-    if [ $(("$CURRENT_TIME"-"$LAST_MODIFIED")) -lt "604800" ] # Cache is valid for 7 days, this might get lowered to 48 hours.
+    if [ $(("$CURRENT_TIME"-"$LAST_MODIFIED")) -lt "604800" ]  # Cache is valid for 7 days, this might get lowered to 48 hours.
     then
         echo " [*  ] Cache is new enough, not updating"
     else
@@ -132,11 +132,11 @@ function rename() {
     echo " [*  ] Renaming episodes"
     for EPISODE in $(seq -w 0 $(("$EPISODE_COUNT" - 1)))
     do
-        EPISODE_NUM=$(( 10#$EPISODE+1 )) # Bash starts at 0, shows start at 1, I need them to match
-        EPISODE_NUM_LEN=${#EPISODE_NUM} # This is to deal with padding below
-        PADDING_REQ=$((${#EPISODE_COUNT}-"$EPISODE_NUM_LEN")) # Subtract len of episodes by len of the current episode number
-        PADDING=$(head -c "$PADDING_REQ" /dev/zero | tr '\0' '0') # Create the zeros for padding
-        mv -v "${episodes_sorted[10#$EPISODE]}" "$SHOW_PATH"/"$SHOW_NAME"\ -\ S"$SEASON_NUMBER"E"$PADDING""$EPISODE_NUM"\ -\ "${EPISODE_NAMES[10#$EPISODE]}".mkv # Renname the episodes
+        EPISODE_NUM=$(( 10#$EPISODE+1 ))  # Bash starts at 0, shows start at 1, I need them to match
+        EPISODE_NUM_LEN=${#EPISODE_NUM}  # This is to deal with padding below
+        PADDING_REQ=$((${#EPISODE_COUNT}-"$EPISODE_NUM_LEN"))  # Subtract len of episodes by len of the current episode number
+        PADDING=$(head -c "$PADDING_REQ" /dev/zero | tr '\0' '0')  # Create the zeros for padding
+        mv -v "${episodes_sorted[10#$EPISODE]}" "$SHOW_PATH"/"$SHOW_NAME"\ -\ S"$SEASON_NUMBER"E"$PADDING""$EPISODE_NUM"\ -\ "${EPISODE_NAMES[10#$EPISODE]}".mkv  # Renname the episodes
     done
 }
 

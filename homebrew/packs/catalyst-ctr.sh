@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ########################################
 # THIS WAS STOLEN FROM MY NX SCRIPT!!  #
 ########################################

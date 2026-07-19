@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # What fucking kind of script is this?
 # This is packwiz deploy script, it deploys every packwiz pack from a desired git repo
 
 # TODO:
-#       - Tell the user what the fuck is going on (NEEDED)
 #       - Error checking (NEEDED)
 #       - Only deploy branches that have a pack.toml (Recommended, very easy to set up)
 #       - Create a barebone prism instance (This will be handled by a different script)
@@ -24,7 +23,7 @@ function vars() {
 }
 
 function deploy() {
-    echo " [*  ] Deploying, please wait..."
+    echo " [*  ] Pulling all branches locally"
     git clone -q "$REPO_URL" "/tmp/$(basename $REPO_URL)"
     for branch in $(git -C "/tmp/$(basename $REPO_URL)" branch -r | grep -v '\->'); do  # idr where I got this from
         git -C "/tmp/$(basename $REPO_URL)" branch -q --track ${branch#origin/} $branch 2> /dev/null

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # No fucking soundboard plugin was working for me how I want so I am going to make a tiny little POS for this
 
@@ -11,5 +11,6 @@ pw-cli create-node adapter "{ factory.name=support.null-audio-sink node.name "So
 pw-link "Soundboard:monitor_MONO" "$DEFAULT_AUDIO:playback_FL"
 pw-link "Soundboard:monitor_MONO" "$DEFAULT_AUDIO:playback_FR"
 pw-link "Soundboard:monitor_MONO" "WEBRTC VoiceEngine:input_MONO"
+#pw-link "Soundboard:monitor_MONO" "REPO.exe:input_MONO"
 PIPEWIRE_NODE=Soundboard mpv --volume="$VOLUME" "$1"  # Plays arg1 as audio and arg2 as volume
 pw-cli d "Soundboard"

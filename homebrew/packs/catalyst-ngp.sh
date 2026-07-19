@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ########################################
 #  PS VITA/TV CLEAN SD/RESTORE SCRIPT  #
 ########################################

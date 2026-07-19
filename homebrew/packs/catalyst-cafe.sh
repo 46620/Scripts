@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #############################
 # Ah shit, here we go again #
 #############################

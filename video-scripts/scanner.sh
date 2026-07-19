@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script is to be used with my Sonarr/Radarr setup to automatically reencode shows to AV1.
 # This script will attempt to be as easy to modify to fit your own needs, but don't expect it to be good.

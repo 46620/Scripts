@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # I hate my fucking life
 # Why can't I do this with a premade script already why am I making this just to delete it.
